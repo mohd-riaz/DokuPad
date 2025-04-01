@@ -16,18 +16,29 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
-function TextEditor() {
+function TextEditor({ documentId }: { documentId: string }) {
   const [socket, setSocket] = useState<Socket>();
   const [quill, setQuill] = useState<Quill>();
 
   useEffect(() => {
     const s = io("http://localhost:3001");
     setSocket(s);
-
     return () => {
       s.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    socket.once("load-document", (document) => {
+      quill.setContents(document);
+      //turn off loading ui here
+      quill.enable();
+    });
+
+    socket.emit("get-document", documentId);
+  }, [socket, quill, documentId]);
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -69,6 +80,8 @@ function TextEditor() {
       theme: "snow",
       modules: { toolbar: TOOLBAR_OPTIONS },
     });
+    q.disable();
+    //turn on loading ui here
     setQuill(q);
   }, []);
 

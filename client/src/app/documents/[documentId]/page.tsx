@@ -1,14 +1,14 @@
-"use client";
+import SingleDocument from "./SingleDocument";
 
-import dynamic from "next/dynamic";
-const TextEditor = dynamic(() => import("@/components/TextEditor"), {
-  ssr: false,
-});
-
-function DocumentPage() {
+async function DocumentPage({
+  params,
+}: {
+  params: Promise<{ documentId: string }>;
+}) {
+  const { documentId } = await params;
   return (
     <div>
-      <TextEditor />
+      <SingleDocument documentId={documentId} />
     </div>
   );
 }
