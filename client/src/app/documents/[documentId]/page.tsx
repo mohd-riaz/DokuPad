@@ -7,7 +7,7 @@ async function DocumentPage({
 }) {
   const { documentId } = await params;
   return (
-    <div>
+    <div className="h-screen overflow-auto">
       <SingleDocument documentId={documentId} />
     </div>
   );

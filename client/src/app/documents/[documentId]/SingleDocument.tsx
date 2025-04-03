@@ -1,13 +1,18 @@
 "use client";
 
 import dynamic from "next/dynamic";
-const TextEditor = dynamic(() => import("@/components/TextEditor"), {
-  ssr: false,
-});
+import Navbar from "./Navbar";
+const TextEditor = dynamic(
+  () => import("@/app/documents/[documentId]/TextEditor"),
+  {
+    ssr: false,
+  }
+);
 
 function SingleDocument({ documentId }: { documentId: string }) {
   return (
     <div>
+      <Navbar />
       <TextEditor documentId={documentId} />
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 import Quill, { Delta } from "quill";
 import "quill/dist/quill.snow.css";
-import { DelHTMLAttributes, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 const TOOLBAR_OPTIONS = [
