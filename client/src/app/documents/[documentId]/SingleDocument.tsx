@@ -11,7 +11,7 @@ const TextEditor = dynamic(
 
 function SingleDocument({ documentId }: { documentId: string }) {
   return (
-    <div>
+    <div className="min-h-screen bg-primary-foreground">
       <Navbar />
       <TextEditor documentId={documentId} />
     </div>

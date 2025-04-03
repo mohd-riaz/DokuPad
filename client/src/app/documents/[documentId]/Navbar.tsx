@@ -36,7 +36,7 @@ import { BsFilePdf } from "react-icons/bs";
 
 function Navbar() {
   return (
-    <nav className="flex items-center justify-between sticky w-screen top-0 h-14 z-50 bg-background print:hidden pt-2">
+    <nav className="flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2">
       <div className="flex gap-2 items-center justify-center ml-4">
         <Link href="/">
           <Image

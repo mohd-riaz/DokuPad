@@ -1,91 +1,60 @@
 "use client";
-import Quill, { Delta } from "quill";
-import "quill/dist/quill.snow.css";
-import { useCallback, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
 
-const TOOLBAR_OPTIONS = [
-  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-  [{ font: [] }],
-  [{ list: "ordered" }, { list: "bullet" }],
-  ["bold", "italic", "underline"],
-  [{ color: [] }, { background: [] }],
-  [{ script: "sub" }, { script: "super" }],
-  [{ align: [] }],
-  ["image", "blockquote", "code-block"],
-  ["clean"],
-];
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
+import Table from "@tiptap/extension-table";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+import TableRow from "@tiptap/extension-table-row";
+import Image from "@tiptap/extension-image";
+import ImageResize from "tiptap-extension-resize-image";
 
 function TextEditor({ documentId }: { documentId: string }) {
-  const [socket, setSocket] = useState<Socket>();
-  const [quill, setQuill] = useState<Quill>();
+  const editor = useEditor({
+    editorProps: {
+      attributes: {
+        style: "padding-left: 56px; padding-right: 56px;",
+        class:
+          "focus:outline-none print:border-0 bg-white border border-[#c7c7c7] flex flex-col min-h-[1054px] w-[816px] pt-10 pb-10 cursor-text",
+      },
+    },
+    extensions: [
+      StarterKit,
+      TaskItem.configure({ nested: true }),
+      TaskList,
+      Table,
+      TableCell,
+      TableHeader,
+      TableRow,
+      Image,
+      ImageResize,
+    ],
+    content: `
+    <table>
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <th colspan="3">Description</th>
+        </tr>
+        <tr>
+          <td>Cyndi Lauper</td>
+          <td>Singer</td>
+          <td>Songwriter</td>
+          <td>Actress</td>
+        </tr>
+      </tbody>
+    </table>
+  `,
+  });
 
-  useEffect(() => {
-    const s = io("http://localhost:3001");
-    setSocket(s);
-    return () => {
-      s.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (socket == null || quill == null) return;
-
-    socket.once("load-document", (document) => {
-      quill.setContents(document);
-      //turn off loading ui here
-      quill.enable();
-    });
-
-    socket.emit("get-document", documentId);
-  }, [socket, quill, documentId]);
-
-  useEffect(() => {
-    if (socket == null || quill == null) return;
-    const handleTextChange = (
-      delta: Delta,
-      oldDelta: Delta,
-      source: string
-    ) => {
-      if (source !== "user") return;
-
-      socket?.emit("send-changes", delta);
-    };
-    quill?.on("text-change", handleTextChange);
-    return () => {
-      quill?.off("text-change", handleTextChange);
-    };
-  }, [socket, quill]);
-
-  useEffect(() => {
-    if (socket == null || quill == null) return;
-    const handleTextChange = (delta: Delta) => {
-      quill.updateContents(delta);
-    };
-    socket?.on("receive-changes", handleTextChange);
-    return () => {
-      socket?.off("receive-changes", handleTextChange);
-    };
-  }, [socket, quill]);
-
-  const wrapperRef = useCallback((wrapper: HTMLElement | null) => {
-    if (wrapper == null) return;
-    wrapper.innerHTML = "";
-    const editor = document.createElement("div");
-    editor.style.width = "100vw";
-    editor.style.minHeight = "100vh";
-
-    wrapper.append(editor);
-    const q = new Quill(editor, {
-      theme: "snow",
-      modules: { toolbar: TOOLBAR_OPTIONS },
-    });
-    q.disable();
-    //turn on loading ui here
-    setQuill(q);
-  }, []);
-
-  return <div className="container" ref={wrapperRef}></div>;
+  return (
+    <div className="size-full overflow-x-auto bg-primary-foreground px-4 print:p-0 print:bg-white print:overflow-visible">
+      <div className="min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0">
+        <EditorContent editor={editor} />
+      </div>
+    </div>
+  );
 }
-
 export default TextEditor;
