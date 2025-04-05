@@ -3,6 +3,7 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -11,75 +12,250 @@ import { type ColorResult, SketchPicker } from "react-color";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/store/use-editor-store";
 import {
+  AlignCenterIcon,
+  AlignJustifyIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
   BoldIcon,
   ChevronDownIcon,
   HighlighterIcon,
+  ImageIcon,
   ItalicIcon,
+  Link2Icon,
+  ListIcon,
+  ListOrderedIcon,
   ListTodoIcon,
   LucideIcon,
   MessageSquarePlusIcon,
   PrinterIcon,
   Redo2Icon,
   RemoveFormattingIcon,
+  SearchIcon,
   SpellCheckIcon,
   StrikethroughIcon,
   UnderlineIcon,
   Undo2Icon,
+  UploadIcon,
 } from "lucide-react";
-import { ChangeEvent, HtmlHTMLAttributes } from "react";
+import { ChangeEvent, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-const FontFamilyButton = () => {
+const ListButton = () => {
   const { editor } = useEditorStore();
 
-  const fonts = [
-    { label: "Arial", value: "Arial, sans-serif" },
-    { label: "Verdana", value: "Verdana, sans-serif" },
-    { label: "Helvetica", value: "Helvetica, sans-serif" },
-    { label: "Tahoma", value: "Tahoma, sans-serif" },
-    { label: "Trebuchet MS", value: "'Trebuchet MS', sans-serif" },
-    { label: "Gill Sans", value: "'Gill Sans', sans-serif" },
-    { label: "Times New Roman", value: "'Times New Roman', serif" },
-    { label: "Georgia", value: "Georgia, serif" },
-    { label: "Garamond", value: "Garamond, serif" },
-    { label: "Palatino", value: "'Palatino Linotype', Palatino, serif" },
-    { label: "Courier New", value: "'Courier New', monospace" },
-    { label: "Lucida Console", value: "'Lucida Console', monospace" },
-    { label: "Impact", value: "Impact, sans-serif" },
-    { label: "Comic Sans MS", value: "'Comic Sans MS', cursive, sans-serif" },
-    { label: "Segoe UI", value: "'Segoe UI', sans-serif" },
-    { label: "System UI", value: "system-ui, sans-serif" },
+  const lists = [
+    {
+      label: "Bullet List",
+      icon: ListIcon,
+      isActive: () => editor?.isActive("bulletList"),
+      onClick: () => {
+        editor?.chain().focus().toggleBulletList().run();
+      },
+    },
+    {
+      label: "Ordered List",
+      icon: ListOrderedIcon,
+      isActive: () => editor?.isActive("orderedList"),
+      onClick: () => {
+        editor?.chain().focus().toggleOrderedList().run();
+      },
+    },
   ];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="h-7 w-[7.5rem] shrink-0 flex items-center justify-between rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
-          <span className="truncate">
-            {fonts.find(
-              (font) =>
-                font.value == editor?.getAttributes("textStyle").fontFamily
-            )?.label || "Arial"}
-          </span>
-          <ChevronDownIcon className="size-4 ml-2 shrink-0" />
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+          <ListIcon className="size-4" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
-        {fonts.map((font) => (
+        {lists.map(({ label, icon: Icon, onClick, isActive }) => (
           <button
-            key={font.value}
+            key={label}
+            onClick={onClick}
             className={cn(
               "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-input",
-              editor?.getAttributes("textStyle").fontFamily === font.value &&
-                "bg-input"
+              isActive() && "bg-input"
             )}
-            style={{ fontFamily: font.value }}
-            onClick={() =>
-              editor?.chain().focus().setFontFamily(font.value).run()
-            }
           >
-            <span className="text-sm">{font.label}</span>
+            <Icon className="size-4" />
+            <span className="text-sm">{label}</span>
           </button>
         ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const AlignButton = () => {
+  const { editor } = useEditorStore();
+
+  const alignments = [
+    { label: "Align Left", value: "left", icon: AlignLeftIcon },
+    { label: "Align Center", value: "center", icon: AlignCenterIcon },
+    { label: "Align Right", value: "right", icon: AlignRightIcon },
+    { label: "Align Justify", value: "justify", icon: AlignJustifyIcon },
+  ];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+          {editor?.isActive({ textAlign: "justify" }) ? (
+            <AlignJustifyIcon className="size-4" />
+          ) : editor?.isActive({ textAlign: "right" }) ? (
+            <AlignRightIcon className="size-4" />
+          ) : editor?.isActive({ textAlign: "center" }) ? (
+            <AlignCenterIcon className="size-4" />
+          ) : (
+            <AlignLeftIcon className="size-4" />
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
+        {alignments.map(({ label, value, icon: Icon }) => (
+          <button
+            key={value}
+            onClick={() => {
+              editor?.chain().focus().setTextAlign(value).run();
+            }}
+            className={cn(
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-input",
+              editor?.isActive({ textAlign: value }) && "bg-input"
+            )}
+          >
+            <Icon className="size-4" />
+            <span className="text-sm">{label}</span>
+          </button>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const ImageButton = () => {
+  const { editor } = useEditorStore();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+
+  const onChange = (src: string) => {
+    editor?.chain().focus().setImage({ src }).run();
+  };
+
+  const onUpload = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const imageUrl_ = URL.createObjectURL(file);
+        onChange(imageUrl_);
+      }
+    };
+
+    input.click();
+  };
+
+  const handleImageUrlSubmit = () => {
+    if (imageUrl) {
+      onChange(imageUrl);
+      setImageUrl("");
+      setIsDialogOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+            <ImageIcon className="size-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={onUpload}>
+            <UploadIcon className="size-4 mr-2" />
+            Upload
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+            <SearchIcon className="size-4 mr-2" />
+            Paste Image Url
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insert Image Url</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Insert Image Url"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleImageUrlSubmit();
+              }
+            }}
+          />
+          <DialogFooter>
+            <Button onClick={handleImageUrlSubmit}>Insert</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+const LinkButton = () => {
+  const { editor } = useEditorStore();
+  const [value, setValue] = useState("");
+
+  const handleApply = (href: string) => {
+    return () => {
+      if (href === "") {
+        editor?.commands.unsetLink();
+      } else {
+        editor?.chain().focus().extendMarkRange("link").setLink({ href }).run();
+      }
+      setValue("");
+    };
+  };
+
+  return (
+    <DropdownMenu
+      onOpenChange={(open) => {
+        if (open) {
+          setValue(editor?.getAttributes("link").href || "");
+        }
+      }}
+    >
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+          <Link2Icon className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-2.5 flex items-center gap-x-2">
+        <Input
+          placeholder="https://example.com"
+          value={value}
+          onChange={(e) => {
+            e.stopPropagation();
+            setValue(e.target.value);
+          }}
+        />
+        <Button onClick={handleApply(value)}>Apply</Button>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -88,7 +264,7 @@ const FontFamilyButton = () => {
 const HighlightColorButton = () => {
   const { editor } = useEditorStore();
 
-  const color = editor?.getAttributes("highlight").color || "#000000";
+  const color = editor?.getAttributes("highlight").color || "#ffffff";
   const onChange = (color: ColorResult, e: ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     editor?.chain().focus().setHighlight({ color: color.hex }).run();
@@ -186,6 +362,63 @@ const HeadingButton = () => {
             }}
           >
             {heading.label}
+          </button>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const FontFamilyButton = () => {
+  const { editor } = useEditorStore();
+
+  const fonts = [
+    { label: "Arial", value: "Arial, sans-serif" },
+    { label: "Verdana", value: "Verdana, sans-serif" },
+    { label: "Helvetica", value: "Helvetica, sans-serif" },
+    { label: "Tahoma", value: "Tahoma, sans-serif" },
+    { label: "Trebuchet MS", value: "'Trebuchet MS', sans-serif" },
+    { label: "Gill Sans", value: "'Gill Sans', sans-serif" },
+    { label: "Times New Roman", value: "'Times New Roman', serif" },
+    { label: "Georgia", value: "Georgia, serif" },
+    { label: "Garamond", value: "Garamond, serif" },
+    { label: "Palatino", value: "'Palatino Linotype', Palatino, serif" },
+    { label: "Courier New", value: "'Courier New', monospace" },
+    { label: "Lucida Console", value: "'Lucida Console', monospace" },
+    { label: "Impact", value: "Impact, sans-serif" },
+    { label: "Comic Sans MS", value: "'Comic Sans MS', cursive, sans-serif" },
+    { label: "Segoe UI", value: "'Segoe UI', sans-serif" },
+    { label: "System UI", value: "system-ui, sans-serif" },
+  ];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 w-[7.5rem] shrink-0 flex items-center justify-between rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+          <span className="truncate">
+            {fonts.find(
+              (font) =>
+                font.value == editor?.getAttributes("textStyle").fontFamily
+            )?.label || "Arial"}
+          </span>
+          <ChevronDownIcon className="size-4 ml-2 shrink-0" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
+        {fonts.map((font) => (
+          <button
+            key={font.value}
+            className={cn(
+              "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-input",
+              editor?.getAttributes("textStyle").fontFamily === font.value &&
+                "bg-input"
+            )}
+            style={{ fontFamily: font.value }}
+            onClick={() =>
+              editor?.chain().focus().setFontFamily(font.value).run()
+            }
+          >
+            <span className="text-sm">{font.label}</span>
           </button>
         ))}
       </DropdownMenuContent>
@@ -338,11 +571,11 @@ function ToolBar() {
       <TextColorButton />
       <HighlightColorButton />
       <Separator orientation="vertical" className="h-6 border border-input" />
-      {/* todo link */}
-      {/* todo image */}
-      {/* todo align */}
+      <LinkButton />
+      <ImageButton />
+      <AlignButton />
       {/* todo lineheight */}
-      {/* todo list */}
+      <ListButton />
       {sections[2]?.map((item) => (
         <ToolbarButton key={item.label} {...item} />
       ))}

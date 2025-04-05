@@ -12,8 +12,10 @@ import Underline from "@tiptap/extension-underline";
 import TiptapImage from "@tiptap/extension-image";
 import FontFamily from "@tiptap/extension-font-family";
 import TextStyle from "@tiptap/extension-text-style";
+import TextAlign from "@tiptap/extension-text-align";
 import { Color } from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
+import TiptapLink from "@tiptap/extension-link";
 import ImageResize from "tiptap-extension-resize-image";
 import { Pagination } from "tiptap-pagination-breaks";
 import { useEditorStore } from "@/store/use-editor-store";
@@ -54,6 +56,7 @@ function TextEditor({ documentId }: { documentId: string }) {
     },
     extensions: [
       StarterKit,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       TaskItem.configure({ nested: true }),
       TaskList,
       Table,
@@ -71,6 +74,11 @@ function TextEditor({ documentId }: { documentId: string }) {
         pageHeight: 1056, // default height of the page
         pageWidth: 816, // default width of the page
         pageMargin: 0, // default margin of the page
+      }),
+      TiptapLink.configure({
+        openOnClick: true,
+        autolink: true,
+        defaultProtocol: "https",
       }),
     ],
     content: `

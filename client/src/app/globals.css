@@ -111,6 +111,16 @@ body {
 }
 
 .tiptap {
+  /* Link styles */
+  a {
+    @apply text-blue-600;
+    cursor: pointer;
+
+    &:hover {
+      @apply underline;
+    }
+  }
+
   /* Image-specific styling */
   img {
     display: block;
@@ -288,4 +298,18 @@ body {
   .page-break {
     display: none;
   }
+}
+
+.ProseMirror img.float-left {
+  float: left;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  max-width: 50%;
+}
+
+.ProseMirror img.float-right {
+  float: right;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  max-width: 50%;
 }
