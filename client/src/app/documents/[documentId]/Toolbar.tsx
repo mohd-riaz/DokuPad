@@ -25,6 +25,7 @@ import {
   UnderlineIcon,
   Undo2Icon,
 } from "lucide-react";
+import { ChangeEvent, HtmlHTMLAttributes } from "react";
 
 const FontFamilyButton = () => {
   const { editor } = useEditorStore();
@@ -86,7 +87,8 @@ const FontFamilyButton = () => {
 const TextColorButton = () => {
   const { editor } = useEditorStore();
   const value = editor?.getAttributes("textStyle").color || "#000000";
-  const onChange = (color: ColorResult) => {
+  const onChange = (color: ColorResult, e: ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     editor?.chain().focus().setColor(color.hex).run();
   };
 
@@ -98,10 +100,7 @@ const TextColorButton = () => {
           <div className="h-0.5 w-full" style={{ backgroundColor: value }} />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="p-0"
-        onChange={(e) => e.stopPropagation()}
-      >
+      <DropdownMenuContent className="p-0">
         <SketchPicker color={value} onChange={onChange} />
       </DropdownMenuContent>
     </DropdownMenu>
