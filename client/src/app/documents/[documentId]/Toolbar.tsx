@@ -13,6 +13,7 @@ import { useEditorStore } from "@/store/use-editor-store";
 import {
   BoldIcon,
   ChevronDownIcon,
+  HighlighterIcon,
   ItalicIcon,
   ListTodoIcon,
   LucideIcon,
@@ -79,6 +80,29 @@ const FontFamilyButton = () => {
             <span className="text-sm">{font.label}</span>
           </button>
         ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const HighlightColorButton = () => {
+  const { editor } = useEditorStore();
+
+  const color = editor?.getAttributes("highlight").color || "#000000";
+  const onChange = (color: ColorResult, e: ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    editor?.chain().focus().setHighlight({ color: color.hex }).run();
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+          <HighlighterIcon className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-0">
+        <SketchPicker color={color} onChange={onChange} />
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -312,7 +336,7 @@ function ToolBar() {
       ))}
       <Separator orientation="vertical" className="h-6 border border-input" />
       <TextColorButton />
-      {/* todo highlight color */}
+      <HighlightColorButton />
       <Separator orientation="vertical" className="h-6 border border-input" />
       {/* todo link */}
       {/* todo image */}
