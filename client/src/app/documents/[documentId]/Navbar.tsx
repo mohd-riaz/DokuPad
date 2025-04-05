@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import DocumentInput from "./DocumentInput";
 import {
@@ -23,35 +22,37 @@ import {
   FilePlusIcon,
   FileTextIcon,
   GlobeIcon,
+  ImageIcon,
   ItalicIcon,
   PrinterIcon,
   Redo2Icon,
   RemoveFormattingIcon,
+  StrikethroughIcon,
+  Table2Icon,
   TextIcon,
   TrashIcon,
   Underline,
   Undo2Icon,
 } from "lucide-react";
 import { BsFilePdf } from "react-icons/bs";
+import Logo from "@/components/Logo";
 
 function Navbar() {
   return (
-    <nav className="flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2">
+    <nav
+      className={` flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2 text-foreground pb-1`}
+    >
       <div className="flex gap-2 items-center justify-center ml-4">
         <Link href="/">
-          <Image
-            src="/logo.svg"
-            alt="logo"
-            width={24}
-            height={24}
-            className=""
-          />
+          <Logo />
         </Link>
         <div className="flex flex-col">
           <DocumentInput />
 
           <div className="flex">
-            <Menubar className="border-none bg-transparent shadow-none h-auto p-0">
+            <Menubar
+              className={`border-none bg-transparent shadow-none h-auto p-0`}
+            >
               <MenubarMenu>
                 <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
                   File
@@ -118,6 +119,29 @@ function Navbar() {
               </MenubarMenu>
               <MenubarMenu>
                 <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
+                  Insert
+                </MenubarTrigger>
+                <MenubarContent>
+                  <MenubarItem>
+                    <ImageIcon className="size-4 mr-2" />
+                    Image
+                  </MenubarItem>
+                  <MenubarSub>
+                    <MenubarSubTrigger>
+                      <Table2Icon className="size-4 mr-2" />
+                      Table
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <MenubarItem>1 X 1</MenubarItem>
+                      <MenubarItem>2 X 2</MenubarItem>
+                      <MenubarItem>3 X 3</MenubarItem>
+                      <MenubarItem>4 X 4</MenubarItem>
+                    </MenubarSubContent>
+                  </MenubarSub>
+                </MenubarContent>
+              </MenubarMenu>
+              <MenubarMenu>
+                <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
                   Format
                 </MenubarTrigger>
                 <MenubarContent>
@@ -140,12 +164,17 @@ function Navbar() {
                         <span>Underline&nbsp;&nbsp;</span>
                         <MenubarShortcut>Ctrl+U</MenubarShortcut>
                       </MenubarItem>
+                      <MenubarItem>
+                        <StrikethroughIcon className="size-4 mr-2" />
+                        <span>Strikethrough&nbsp;&nbsp;</span>
+                        <MenubarShortcut>Ctrl+S</MenubarShortcut>
+                      </MenubarItem>
                     </MenubarSubContent>
-                    <MenubarItem>
-                      <RemoveFormattingIcon className="size-4 mr-2" />
-                      Clear formatting
-                    </MenubarItem>
                   </MenubarSub>
+                  <MenubarItem>
+                    <RemoveFormattingIcon className="size-4 mr-2" />
+                    Clear formatting
+                  </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>

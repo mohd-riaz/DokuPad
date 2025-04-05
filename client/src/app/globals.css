@@ -152,7 +152,7 @@ body {
     }
 
     .selectedCell:after {
-      background: rgba(0, 0, 0, 0.2);
+      background: #0073ff7d;
       content: "";
       left: 0;
       right: 0;
