@@ -38,7 +38,9 @@ import {
   UnderlineIcon,
   Undo2Icon,
   UploadIcon,
+  WrapText,
 } from "lucide-react";
+
 import { ChangeEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -49,6 +51,41 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+const TextWrapButton = () => {
+  const { editor } = useEditorStore();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const textWraps = [
+    { label: "Float None", value: "float-none" },
+    { label: "Float Left", value: "float-left" },
+    { label: "Float Right", value: "float-right" },
+  ];
+
+  return (
+    <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+      <DropdownMenuTrigger asChild>
+        <button className="h-7 min-w-7 shrink-0 flex flex-col items-center justify-center rounded-sm hover:bg-input px-1.5 overflow-hidden text-sm">
+          <WrapText className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
+        {textWraps.map(({ label, value }) => (
+          <button
+            key={value}
+            onClick={() => {
+              editor?.chain().updateAttributes("image", { class: value }).run();
+              setDropdownOpen(false); // Close the dropdown
+            }}
+            className="flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-input"
+          >
+            <span className="text-sm">{label}</span>
+          </button>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const FontSizeButton = () => {
   const { editor } = useEditorStore();
@@ -663,7 +700,9 @@ function ToolBar() {
       <Separator orientation="vertical" className="h-6 border border-input" />
       <LinkButton />
       <ImageButton />
+      <Separator orientation="vertical" className="h-6 border border-input" />
       <AlignButton />
+      <TextWrapButton />
       {/* todo lineheight */}
       <ListButton />
       {sections[2]?.map((item) => (

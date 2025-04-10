@@ -11,7 +11,6 @@ export const CustomImageResize = ImageResize.extend({
           return attributes.class ? { class: attributes.class } : {};
         },
       },
-      // You can add other custom attributes here
     };
   },
 }).configure({
