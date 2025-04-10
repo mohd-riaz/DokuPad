@@ -16,9 +16,14 @@ import TextAlign from "@tiptap/extension-text-align";
 import { Color } from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
 import TiptapLink from "@tiptap/extension-link";
+
 import ImageResize from "tiptap-extension-resize-image";
+
 import { Pagination } from "tiptap-pagination-breaks";
+
 import { useEditorStore } from "@/store/use-editor-store";
+
+import { FontSizeExtension } from "@/extensions/font-size";
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
@@ -56,6 +61,7 @@ function TextEditor({ documentId }: { documentId: string }) {
     },
     extensions: [
       StarterKit,
+      FontSizeExtension,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       TaskItem.configure({ nested: true }),
       TaskList,
@@ -63,8 +69,10 @@ function TextEditor({ documentId }: { documentId: string }) {
       TableCell,
       TableHeader,
       TableRow,
-      TiptapImage,
-      ImageResize,
+      TiptapImage.configure({ inline: true }),
+      ImageResize.configure({
+        inline: true,
+      }),
       Underline,
       FontFamily,
       TextStyle,
