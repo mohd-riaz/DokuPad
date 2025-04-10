@@ -301,7 +301,6 @@ body {
 }
 
 .ProseMirror {
-  background-color: red;
   overflow: auto;
 }
 
@@ -313,11 +312,24 @@ body {
   margin: 0;
 }
 
-.ProseMirror p div {
+.ProseMirror p div:has(.float-left) {
   float: left;
   margin-right: 5px;
 }
 
-div[style*="position: absolute"][style*="top: 0%"][style*="left: 50%"][style*="z-index: 999"] {
+.ProseMirror p div:has(.float-right) {
+  float: right;
+  margin-left: 5px;
+}
+
+.ProseMirror p div:has(.float-none) {
+  float: none;
+  margin: 0;
+}
+
+div:has(.float-left)
+  div[style*="position: absolute"][style*="top: 0%"][style*="left: 50%"][style*="z-index: 999"],
+div:has(.float-right)
+  div[style*="position: absolute"][style*="top: 0%"][style*="left: 50%"][style*="z-index: 999"] {
   display: none !important;
 }

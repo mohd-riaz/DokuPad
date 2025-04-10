@@ -24,6 +24,7 @@ import { Pagination } from "tiptap-pagination-breaks";
 import { useEditorStore } from "@/store/use-editor-store";
 
 import { FontSizeExtension } from "@/extensions/font-size";
+import { CustomImageResize } from "@/extensions/custom-image-resize";
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
@@ -70,9 +71,7 @@ function TextEditor({ documentId }: { documentId: string }) {
       TableHeader,
       TableRow,
       TiptapImage.configure({ inline: true }),
-      ImageResize.configure({
-        inline: true,
-      }),
+      CustomImageResize,
       Underline,
       FontFamily,
       TextStyle,
