@@ -25,6 +25,7 @@ import { useEditorStore } from "@/store/use-editor-store";
 
 import { FontSizeExtension } from "@/extensions/font-size";
 import { CustomImageResize } from "@/extensions/custom-image-resize";
+import { LineHeightExtension } from "@/extensions/line-height";
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
@@ -62,6 +63,9 @@ function TextEditor({ documentId }: { documentId: string }) {
     },
     extensions: [
       StarterKit,
+      LineHeightExtension.configure({
+        types: ["heading", "paragraph"],
+      }),
       FontSizeExtension,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       TaskItem.configure({ nested: true }),
