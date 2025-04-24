@@ -332,6 +332,44 @@ function Navbar() {
                       </MenubarItem>
                     </MenubarSubContent>
                   </MenubarSub>
+                  <MenubarSub>
+                    <MenubarSubTrigger>
+                      <ImageIcon className="size-4 mr-2" />
+                      Image
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <MenubarItem
+                        onClick={() =>
+                          editor
+                            ?.chain()
+                            .updateAttributes("image", { class: "float-none" })
+                            .run()
+                        }
+                      >
+                        Float None
+                      </MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor
+                            ?.chain()
+                            .updateAttributes("image", { class: "float-left" })
+                            .run()
+                        }
+                      >
+                        Float Left
+                      </MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor
+                            ?.chain()
+                            .updateAttributes("image", { class: "float-right" })
+                            .run()
+                        }
+                      >
+                        Float Right
+                      </MenubarItem>
+                    </MenubarSubContent>
+                  </MenubarSub>
                   <MenubarItem
                     onClick={() =>
                       editor?.chain().focus().unsetAllMarks().run()
