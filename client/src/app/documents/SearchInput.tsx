@@ -32,7 +32,7 @@ export default function SearchInput() {
         <Button
           type="submit"
           variant="ghost"
-          className="size-9 absolute left-1 top-1/2 -translate-y-1/2 rounded-full"
+          className="size-9 absolute left-1 top-1/2 -translate-y-1/2 rounded-full hover:bg-input"
         >
           <SearchIcon className="size-5" />
         </Button>
@@ -40,7 +40,7 @@ export default function SearchInput() {
           <Button
             type="button"
             variant="ghost"
-            className="size-9 absolute right-1 top-1/2 -translate-y-1/2 rounded-full"
+            className="size-9 absolute right-1 top-1/2 -translate-y-1/2 rounded-full hover:bg-input"
             onClick={handleClear}
           >
             <XIcon className="size-5" />
