@@ -153,7 +153,7 @@ const Marker = ({
       <FaCaretDown className="absolute left-1/2 top-0 h-full fill-foreground tranform -translate-x-1/2" />
       <div
         className={cn(
-          "absolute left-1/2 top-4 transform -translate-x-1/2 transition-opacity duration-150 h-screen w-[1px] bg-black",
+          "absolute left-1/2 top-4 transform -translate-x-1/2 transition-opacity duration-150 h-screen w-[1px] bg-neutral-500",
           isDragging ? "block" : "hidden"
         )}
       />
