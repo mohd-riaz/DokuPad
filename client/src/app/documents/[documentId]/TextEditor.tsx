@@ -17,8 +17,6 @@ import { Color } from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
 import TiptapLink from "@tiptap/extension-link";
 
-import ImageResize from "tiptap-extension-resize-image";
-
 import { Pagination } from "tiptap-pagination-breaks";
 
 import { useEditorStore } from "@/store/use-editor-store";
@@ -26,6 +24,8 @@ import { useEditorStore } from "@/store/use-editor-store";
 import { FontSizeExtension } from "@/extensions/font-size";
 import { CustomImageResize } from "@/extensions/custom-image-resize";
 import { LineHeightExtension } from "@/extensions/line-height";
+
+import MarginRuler from "./MarginRuler";
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
@@ -81,11 +81,11 @@ function TextEditor({ documentId }: { documentId: string }) {
       TextStyle,
       Color,
       Highlight.configure({ multicolor: true }),
-      Pagination.configure({
-        pageHeight: 1056, // default height of the page
-        pageWidth: 816, // default width of the page
-        pageMargin: 0, // default margin of the page
-      }),
+      // Pagination.configure({
+      //   pageHeight: 1056, // default height of the page
+      //   pageWidth: 816, // default width of the page
+      //   pageMargin: 0, // default margin of the page
+      // }),
       TiptapLink.configure({
         openOnClick: true,
         autolink: true,
@@ -115,6 +115,7 @@ function TextEditor({ documentId }: { documentId: string }) {
     <div
       className={`size-full overflow-x-auto bg-primary-foreground px-4 print:p-0 print:bg-white print:overflow-visible text-black`}
     >
+      <MarginRuler />
       <div
         className={`min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0`}
       >

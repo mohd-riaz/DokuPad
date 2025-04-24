@@ -363,7 +363,7 @@ const ImageButton = () => {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby="">
           <DialogHeader>
             <DialogTitle>Insert Image Url</DialogTitle>
           </DialogHeader>
