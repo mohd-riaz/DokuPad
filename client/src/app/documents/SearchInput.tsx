@@ -27,7 +27,7 @@ export default function SearchInput() {
           onChange={handleChange}
           ref={inputRef}
           placeholder="Search"
-          className="md:text-base px-12 w-full border-none focus-visible:shadow-sm bg-primary-foreground rounded-full h-[40px] focus-visible:ring-0 focus:bg-background focus-visible:shadow-neutral-500 transition-shadow duration-150"
+          className="md:text-base px-12 w-full border-none focus-visible:shadow-sm bg-secondary rounded-full h-[40px] focus-visible:ring-0 focus:bg-background focus-visible:shadow-neutral-500 transition-shadow duration-150"
         />
         <Button
           type="submit"
