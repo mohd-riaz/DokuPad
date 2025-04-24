@@ -10,9 +10,13 @@ async function DocumentPage({
   const { documentId } = await params;
   return (
     <div className="min-h-screen bg-primary-foreground overflow-auto">
-      <Navbar />
-      <Toolbar />
-      <TextEditor documentId={documentId} />
+      <div className="flex flex-col fixed top-0 left-0 right-0 z-10 bg-primary-foreground print:hidden">
+        <Navbar />
+        <Toolbar />
+      </div>
+      <div className="pt-[122px] print:pt-0">
+        <TextEditor documentId={documentId} />
+      </div>
     </div>
   );
 }

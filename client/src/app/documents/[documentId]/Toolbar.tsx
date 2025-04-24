@@ -721,7 +721,7 @@ function ToolBar() {
     ],
   ];
   return (
-    <div className="bg-background px-2.5 py-0.5 rounded-3xl min-h-10 flex items-center gap-x-0.5 overflow-x-auto">
+    <div className="bg-background px-2.5 py-0.5 rounded-b-lg min-h-10 flex items-center gap-x-0.5 overflow-x-auto">
       {sections[0]?.map((item) => (
         <ToolbarButton key={item.label} {...item} />
       ))}
