@@ -25,7 +25,7 @@ import { FontSizeExtension } from "@/extensions/font-size";
 import { CustomImageResize } from "@/extensions/custom-image-resize";
 import { LineHeightExtension } from "@/extensions/line-height";
 
-import MarginRuler from "./MarginRuler";
+import MarginRuler from "./margin-ruler";
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();

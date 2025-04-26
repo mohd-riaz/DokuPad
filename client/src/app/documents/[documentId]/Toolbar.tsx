@@ -618,7 +618,7 @@ const ToolbarButton = ({
   );
 };
 
-function ToolBar() {
+function Toolbar() {
   const { editor } = useEditorStore();
   const sections: {
     label: string;
@@ -752,4 +752,4 @@ function ToolBar() {
     </div>
   );
 }
-export default ToolBar;
+export default Toolbar;

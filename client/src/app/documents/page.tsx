@@ -1,5 +1,6 @@
 import Link from "next/link";
-import DocumentNavbar from "./DocumentNavbar";
+import DocumentNavbar from "./document-navbar";
+import TemplateGallery from "./template-gallery";
 
 export default function Documents() {
   return (
@@ -8,9 +9,7 @@ export default function Documents() {
         <DocumentNavbar />
       </div>
       <div className="mt-16">
-        <Link href="/documents/1234">
-          <span>bob</span>
-        </Link>
+        <TemplateGallery />
       </div>
     </div>
   );

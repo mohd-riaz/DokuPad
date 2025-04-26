@@ -1,6 +1,6 @@
-import Navbar from "./Navbar";
-import TextEditor from "./TextEditor";
-import Toolbar from "./Toolbar";
+import Navbar from "./navbar";
+import TextEditor from "./text-editor";
+import Toolbar from "./toolbar";
 
 async function DocumentPage({
   params,

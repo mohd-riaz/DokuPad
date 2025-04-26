@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import DocumentInput from "./DocumentInput";
+import DocumentInput from "./document-input";
 import {
   Menubar,
   MenubarContent,
@@ -37,9 +37,9 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { BsFilePdf } from "react-icons/bs";
-import Logo from "@/components/Logo";
+import Logo from "@/components/logo";
 import { useEditorStore } from "@/store/use-editor-store";
-import TableInserter from "./TableInserter";
+import TableInserter from "./table-inserter";
 import {
   Dialog,
   DialogContent,
