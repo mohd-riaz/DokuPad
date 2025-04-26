@@ -4,6 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Roboto_Flex } from "next/font/google";
+import { ConvexClientProvider } from "@/components/convex-client-provider";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -37,7 +38,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>
