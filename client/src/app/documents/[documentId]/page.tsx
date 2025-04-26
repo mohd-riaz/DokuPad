@@ -1,4 +1,6 @@
-import SingleDocument from "./SingleDocument";
+import Navbar from "./navbar";
+import TextEditor from "./text-editor";
+import Toolbar from "./toolbar";
 
 async function DocumentPage({
   params,
@@ -7,8 +9,14 @@ async function DocumentPage({
 }) {
   const { documentId } = await params;
   return (
-    <div className="h-screen overflow-auto">
-      <SingleDocument documentId={documentId} />
+    <div className="min-h-screen bg-primary-foreground overflow-auto">
+      <div className="flex flex-col fixed top-0 left-0 right-0 z-10 bg-primary-foreground print:hidden">
+        <Navbar />
+        <Toolbar />
+      </div>
+      <div className="pt-[122px] print:pt-0">
+        <TextEditor documentId={documentId} />
+      </div>
     </div>
   );
 }

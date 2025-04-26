@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import DocumentInput from "./DocumentInput";
+import DocumentInput from "./document-input";
 import {
   Menubar,
   MenubarContent,
@@ -23,35 +22,123 @@ import {
   FilePlusIcon,
   FileTextIcon,
   GlobeIcon,
+  ImageIcon,
   ItalicIcon,
   PrinterIcon,
   Redo2Icon,
   RemoveFormattingIcon,
+  SearchIcon,
+  StrikethroughIcon,
+  Table2Icon,
   TextIcon,
   TrashIcon,
   Underline,
   Undo2Icon,
+  UploadIcon,
 } from "lucide-react";
 import { BsFilePdf } from "react-icons/bs";
+import Logo from "@/components/logo";
+import { useEditorStore } from "@/store/use-editor-store";
+import TableInserter from "./table-inserter";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 function Navbar() {
+  const { editor } = useEditorStore();
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
+
+  const [rows, setRows] = useState("");
+  const [cols, setCols] = useState("");
+
+  const [imageUrl, setImageUrl] = useState("");
+
+  const onChange = (src: string) => {
+    editor?.chain().focus().setImage({ src }).run();
+  };
+
+  const onUpload = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const imageUrl_ = URL.createObjectURL(file);
+        onChange(imageUrl_);
+      }
+    };
+
+    input.click();
+  };
+
+  const handleImageUrlSubmit = () => {
+    if (imageUrl) {
+      onChange(imageUrl);
+      setImageUrl("");
+      setIsImageDialogOpen(false);
+    }
+  };
+
+  const onDownload = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+  };
+
+  const onSaveJSON = () => {
+    if (!editor) return;
+    const content = editor?.getJSON();
+    const blob = new Blob([JSON.stringify(content)], {
+      type: "application/json",
+    });
+    onDownload(blob, `document.json`);
+  };
+
+  const onSaveHTML = () => {
+    if (!editor) return;
+    const content = editor?.getHTML();
+    const blob = new Blob([content], {
+      type: "text/html",
+    });
+    onDownload(blob, `document.html`);
+  };
+
+  const onSaveText = () => {
+    if (!editor) return;
+    const content = editor?.getText();
+    const blob = new Blob([content], {
+      type: "text/plain",
+    });
+    onDownload(blob, `document.txt`);
+  };
+
   return (
-    <nav className="flex items-center justify-between sticky w-screen top-0 h-14 z-50 bg-background print:hidden pt-2">
+    <nav
+      className={` flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2 text-foreground pb-1`}
+    >
       <div className="flex gap-2 items-center justify-center ml-4">
         <Link href="/">
-          <Image
-            src="/logo.svg"
-            alt="logo"
-            width={24}
-            height={24}
-            className=""
-          />
+          <Logo />
         </Link>
         <div className="flex flex-col">
           <DocumentInput />
 
           <div className="flex">
-            <Menubar className="border-none bg-transparent shadow-none h-auto p-0">
+            <Menubar
+              className={`border-none bg-transparent shadow-none h-auto p-0`}
+            >
               <MenubarMenu>
                 <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
                   File
@@ -63,19 +150,19 @@ function Navbar() {
                       Save
                     </MenubarSubTrigger>
                     <MenubarSubContent>
-                      <MenubarItem>
+                      <MenubarItem onClick={onSaveJSON}>
                         <FileJsonIcon className="size-4 mr-2" />
                         JSON
                       </MenubarItem>
-                      <MenubarItem>
+                      <MenubarItem onClick={onSaveHTML}>
                         <GlobeIcon className="size-4 mr-2" />
                         HTML
                       </MenubarItem>
-                      <MenubarItem>
+                      <MenubarItem onClick={() => window.print()}>
                         <BsFilePdf className="size-4 mr-2" />
                         PDF
                       </MenubarItem>
-                      <MenubarItem>
+                      <MenubarItem onClick={onSaveText}>
                         <FileTextIcon className="size-4 mr-2" />
                         Text
                       </MenubarItem>
@@ -106,16 +193,133 @@ function Navbar() {
                   Edit
                 </MenubarTrigger>
                 <MenubarContent>
-                  <MenubarItem>
+                  <MenubarItem
+                    onClick={() => editor?.chain().focus().undo().run()}
+                  >
                     <Undo2Icon className="size-4 mr-2" />
                     Undo <MenubarShortcut>Ctrl+Z</MenubarShortcut>
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem
+                    onClick={() => editor?.chain().focus().redo().run()}
+                  >
                     <Redo2Icon className="size-4 mr-2" />
                     Redo<MenubarShortcut>Ctrl+Y</MenubarShortcut>
                   </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
+              <MenubarMenu>
+                <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
+                  Insert
+                </MenubarTrigger>
+                <MenubarContent>
+                  <MenubarSub>
+                    <MenubarSubTrigger>
+                      <ImageIcon className="size-4 mr-2" />
+                      Image
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <MenubarItem onClick={onUpload}>
+                        <UploadIcon className="size-4 mr-2" />
+                        Upload
+                      </MenubarItem>
+                      <MenubarItem onClick={() => setIsImageDialogOpen(true)}>
+                        <SearchIcon className="size-4 mr-2" />
+                        Paste Image Url
+                      </MenubarItem>
+                    </MenubarSubContent>
+                  </MenubarSub>
+                  <MenubarSub>
+                    <MenubarSubTrigger>
+                      <Table2Icon className="size-4 mr-2" />
+                      Table
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <TableInserter />
+                      <MenubarSeparator />
+                      <MenubarItem onClick={() => setIsTableDialogOpen(true)}>
+                        Insert Table...
+                      </MenubarItem>
+                    </MenubarSubContent>
+                  </MenubarSub>
+                </MenubarContent>
+              </MenubarMenu>
+              {/* Image dialog */}
+              <Dialog
+                open={isImageDialogOpen}
+                onOpenChange={setIsImageDialogOpen}
+              >
+                <DialogContent aria-describedby="">
+                  <DialogHeader>
+                    <DialogTitle>Insert Image Url</DialogTitle>
+                  </DialogHeader>
+                  <Input
+                    placeholder="Insert Image Url"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleImageUrlSubmit();
+                      }
+                    }}
+                  />
+                  <DialogFooter>
+                    <Button onClick={handleImageUrlSubmit}>Insert</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              {/* Table dialog */}
+              <Dialog
+                open={isTableDialogOpen}
+                onOpenChange={setIsTableDialogOpen}
+              >
+                <DialogContent aria-describedby="">
+                  <DialogHeader>
+                    <DialogTitle>Insert Table</DialogTitle>
+                  </DialogHeader>
+                  <Input
+                    placeholder="Rows"
+                    value={rows}
+                    onChange={(e) => {
+                      const input = e.target.value;
+
+                      // Allow empty input (so user can delete), or only digits
+                      if (input === "" || /^[0-9]+$/.test(input)) {
+                        setRows(input);
+                      }
+                    }}
+                  />
+                  <Input
+                    placeholder="Columns"
+                    value={cols}
+                    onChange={(e) => {
+                      const input = e.target.value;
+
+                      // Allow empty input (so user can delete), or only digits
+                      if (input === "" || /^[0-9]+$/.test(input)) {
+                        setCols(input);
+                      }
+                    }}
+                  />
+                  <DialogFooter>
+                    <Button
+                      onClick={() => {
+                        editor
+                          ?.chain()
+                          .focus()
+                          .insertTable({
+                            rows: +rows || 1,
+                            cols: +cols || 1,
+                            withHeaderRow: false,
+                          })
+                          .run();
+                        setIsTableDialogOpen(false);
+                      }}
+                    >
+                      Insert
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               <MenubarMenu>
                 <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
                   Format
@@ -127,25 +331,88 @@ function Navbar() {
                       Text
                     </MenubarSubTrigger>
                     <MenubarSubContent>
-                      <MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor?.chain().focus().toggleBold().run()
+                        }
+                      >
                         <BoldIcon className="size-4 mr-2" />
                         Bold<MenubarShortcut>Ctrl+B</MenubarShortcut>
                       </MenubarItem>
-                      <MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor?.chain().focus().toggleItalic().run()
+                        }
+                      >
                         <ItalicIcon className="size-4 mr-2" />
                         Italic<MenubarShortcut>Ctrl+I</MenubarShortcut>
                       </MenubarItem>
-                      <MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor?.chain().focus().toggleUnderline().run()
+                        }
+                      >
                         <Underline className="size-4 mr-2" />
                         <span>Underline&nbsp;&nbsp;</span>
                         <MenubarShortcut>Ctrl+U</MenubarShortcut>
                       </MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor?.chain().focus().toggleStrike().run()
+                        }
+                      >
+                        <StrikethroughIcon className="size-4 mr-2" />
+                        <span>Strikethrough&nbsp;&nbsp;</span>
+                        <MenubarShortcut>Ctrl+S</MenubarShortcut>
+                      </MenubarItem>
                     </MenubarSubContent>
-                    <MenubarItem>
-                      <RemoveFormattingIcon className="size-4 mr-2" />
-                      Clear formatting
-                    </MenubarItem>
                   </MenubarSub>
+                  <MenubarSub>
+                    <MenubarSubTrigger>
+                      <ImageIcon className="size-4 mr-2" />
+                      Image
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <MenubarItem
+                        onClick={() =>
+                          editor
+                            ?.chain()
+                            .updateAttributes("image", { class: "float-none" })
+                            .run()
+                        }
+                      >
+                        Float None
+                      </MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor
+                            ?.chain()
+                            .updateAttributes("image", { class: "float-left" })
+                            .run()
+                        }
+                      >
+                        Float Left
+                      </MenubarItem>
+                      <MenubarItem
+                        onClick={() =>
+                          editor
+                            ?.chain()
+                            .updateAttributes("image", { class: "float-right" })
+                            .run()
+                        }
+                      >
+                        Float Right
+                      </MenubarItem>
+                    </MenubarSubContent>
+                  </MenubarSub>
+                  <MenubarItem
+                    onClick={() =>
+                      editor?.chain().focus().unsetAllMarks().run()
+                    }
+                  >
+                    <RemoveFormattingIcon className="size-4 mr-2" />
+                    Clear formatting
+                  </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
