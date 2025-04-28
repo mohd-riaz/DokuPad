@@ -21,6 +21,10 @@ function DocumentNavbar() {
           appearance={{
             baseTheme: resolvedTheme === "dark" ? dark : undefined,
           }}
+          afterCreateOrganizationUrl="/"
+          afterLeaveOrganizationUrl="/"
+          afterSelectOrganizationUrl="/"
+          afterSelectPersonalUrl="/"
         />
         <UserButton
           appearance={{

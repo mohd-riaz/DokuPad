@@ -13,9 +13,14 @@ export const createDocument = mutation({
       throw new ConvexError("Unauthorized");
     }
 
+    const organizationId = (user.organization_id ?? undefined) as
+      | string
+      | undefined;
+
     const documentId = await ctx.db.insert("documents", {
       title: args.title ?? "Untitled document",
       ownerId: user.subject,
+      organizationId,
       initialContent: args.initialContent,
     });
 
@@ -34,11 +39,31 @@ export const getDocuments = query({
       throw new ConvexError("Unauthorized");
     }
 
-    if (args.search) {
+    const organizationId = (user.organization_id ?? undefined) as
+      | string
+      | undefined;
+
+    if (args.search && organizationId) {
+      return await ctx.db
+        .query("documents")
+        .withSearchIndex("search_title", (q) =>
+          q
+            .search("title", args.search || "")
+            .eq("organizationId", organizationId)
+        )
+        .paginate(args.paginationOpts);
+    } else if (args.search) {
       return await ctx.db
         .query("documents")
         .withSearchIndex("search_title", (q) =>
           q.search("title", args.search || "").eq("ownerId", user.subject)
+        )
+        .paginate(args.paginationOpts);
+    } else if (organizationId) {
+      return await ctx.db
+        .query("documents")
+        .withIndex("by_organization_id", (q) =>
+          q.eq("organizationId", organizationId)
         )
         .paginate(args.paginationOpts);
     }
