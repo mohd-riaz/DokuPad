@@ -23,7 +23,7 @@ function DocumentRow({ document }: DocumentRowProps) {
       onClick={() => router.push(`/documents/${document._id}`)}
     >
       <TableCell className="w-[50px]">
-        <FileTextIcon className="size-6 text-foreground" />
+        <FileTextIcon className="size-6 text-muted-foreground" />
       </TableCell>
       <TableCell className="font-medium md:w-[45%]">{document.title}</TableCell>
       <TableCell className="text-muted-foreground hidden md:flex items-center gap-2">

@@ -57,7 +57,7 @@ export default function TemplateGallery() {
                       backgroundPosition: "center",
                       backgroundRepeat: "no-repeat",
                     }}
-                    className="size-full hover:border-neutral-500 rounded-sm border-2 hover:bg-neutral-100 transition flex flex-col items-center justify-center gap-y-4 bg-white"
+                    className="size-full hover:border-neutral-500 rounded-sm border-2 hover:brightness-90 transition flex flex-col items-center justify-center gap-y-4 bg-white"
                   ></button>
                   <p className="text-sm font-medium truncate">
                     {template.label}

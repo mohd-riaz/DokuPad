@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DocumentRow from "./document-row";
+import { Button } from "@/components/ui/button";
 
 interface DocumentsTableProps {
   documents: Doc<"documents">[] | undefined;
@@ -20,7 +21,7 @@ interface DocumentsTableProps {
 function DocumentsTable({ documents, loadMore, status }: DocumentsTableProps) {
   return (
     <div className="max-w-screen-xl mx-auto px-16 py-6 flex flex-col gap-5">
-      {documents === undefined ? (
+      {documents === undefined || status === "LoadingFirstPage" ? (
         <div className="flex justify-center items-center h-24">
           <LoaderIcon className="animate-spin text-muted-foreground size-5" />
         </div>
@@ -58,6 +59,16 @@ function DocumentsTable({ documents, loadMore, status }: DocumentsTableProps) {
           </Table>
         </div>
       )}
+      <div className="flex items-center justify-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => loadMore(5)}
+          disabled={status !== "CanLoadMore"}
+        >
+          {status === "CanLoadMore" ? "Load more" : "End of results"}
+        </Button>
+      </div>
     </div>
   );
 }

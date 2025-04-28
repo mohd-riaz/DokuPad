@@ -1,7 +1,7 @@
 import Logo from "@/components/logo";
 import Link from "next/link";
 import SearchInput from "./search-input";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
 
@@ -16,7 +16,12 @@ function DocumentNavbar() {
         <h3 className="text-xl">DokuPad</h3>
       </div>
       <SearchInput />
-      <div className="mr-4 flex items-center">
+      <div className="pl-6 mr-4 flex gap-3 items-center">
+        <OrganizationSwitcher
+          appearance={{
+            baseTheme: resolvedTheme === "dark" ? dark : undefined,
+          }}
+        />
         <UserButton
           appearance={{
             baseTheme: resolvedTheme === "dark" ? dark : undefined,
