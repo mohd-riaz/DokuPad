@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Roboto_Flex } from "next/font/google";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -39,7 +40,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NuqsAdapter>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <ConvexClientProvider>
+              <Toaster /> {children}
+            </ConvexClientProvider>
           </NuqsAdapter>
         </ThemeProvider>
       </body>

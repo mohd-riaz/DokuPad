@@ -11,10 +11,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { api } from "../../convex/_generated/api";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface RemoveDialogProps {
   documentId: Id<"documents">;
@@ -27,7 +27,10 @@ function RemoveDialog({ documentId, state }: RemoveDialogProps) {
 
   const handleDelete = (id: Id<"documents">) => {
     setIsDeleting(true);
-    removeDocument({ id }).finally(() => setIsDeleting(false));
+    removeDocument({ id })
+      .catch(() => toast.error("Something went wrong"))
+      .then(() => toast.success("Document removed"))
+      .finally(() => setIsDeleting(false));
   };
 
   return (

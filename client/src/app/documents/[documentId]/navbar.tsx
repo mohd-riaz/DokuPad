@@ -50,6 +50,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
+import { useTheme } from "next-themes";
+import { dark } from "@clerk/themes";
 
 function Navbar() {
   const { editor } = useEditorStore();
@@ -60,6 +63,8 @@ function Navbar() {
   const [cols, setCols] = useState("");
 
   const [imageUrl, setImageUrl] = useState("");
+
+  const { resolvedTheme } = useTheme();
 
   const onChange = (src: string) => {
     editor?.chain().focus().setImage({ src }).run();
@@ -126,7 +131,7 @@ function Navbar() {
 
   return (
     <nav
-      className={` flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2 text-foreground pb-1`}
+      className={`flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2 text-foreground pb-1`}
     >
       <div className="flex gap-2 items-center justify-center ml-4">
         <Link href="/">
@@ -418,6 +423,22 @@ function Navbar() {
             </Menubar>
           </div>
         </div>
+      </div>
+      <div className="pl-6 mr-7 flex gap-3 items-center">
+        <OrganizationSwitcher
+          appearance={{
+            baseTheme: resolvedTheme === "dark" ? dark : undefined,
+          }}
+          afterCreateOrganizationUrl="/"
+          afterLeaveOrganizationUrl="/"
+          afterSelectOrganizationUrl="/"
+          afterSelectPersonalUrl="/"
+        />
+        <UserButton
+          appearance={{
+            baseTheme: resolvedTheme === "dark" ? dark : undefined,
+          }}
+        />
       </div>
     </nav>
   );

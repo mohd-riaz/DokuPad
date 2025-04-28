@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 interface RenameDialogProps {
   documentId: Id<"documents">;
@@ -30,10 +31,13 @@ function RenameDialog({ documentId, initialTitle, state }: RenameDialogProps) {
 
   const handleRename = (id: Id<"documents">, title: string) => {
     setIsRenaming(true);
-    updateDocument({ id, title }).finally(() => {
-      setIsRenaming(false);
-      state[1](false);
-    });
+    updateDocument({ id, title })
+      .catch(() => toast.error("Something went wrong"))
+      .then(() => toast.success("Document renamed"))
+      .finally(() => {
+        setIsRenaming(false);
+        state[1](false);
+      });
   };
 
   return (
