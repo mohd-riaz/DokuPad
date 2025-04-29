@@ -17,7 +17,12 @@ import { Color } from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
 import TiptapLink from "@tiptap/extension-link";
 
-import { Pagination } from "tiptap-pagination-breaks";
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+
+// import { Pagination } from "tiptap-pagination-breaks";
 
 import { useEditorStore } from "@/store/use-editor-store";
 
@@ -26,9 +31,17 @@ import { CustomImageResize } from "@/extensions/custom-image-resize";
 import { LineHeightExtension } from "@/extensions/line-height";
 
 import MarginRuler from "./margin-ruler";
+import { useMemo } from "react";
+
+const ydoc = new Y.Doc();
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
+  const provider = useMemo(() => {
+    return new WebsocketProvider("ws://localhost:1234", documentId, ydoc, {
+      connect: true,
+    });
+  }, [documentId]);
 
   const editor = useEditor({
     onCreate({ editor }) {
@@ -62,7 +75,7 @@ function TextEditor({ documentId }: { documentId: string }) {
       },
     },
     extensions: [
-      StarterKit,
+      StarterKit.configure({ history: false }),
       LineHeightExtension.configure({
         types: ["heading", "paragraph"],
       }),
@@ -90,6 +103,14 @@ function TextEditor({ documentId }: { documentId: string }) {
         openOnClick: true,
         autolink: true,
         defaultProtocol: "https",
+      }),
+      Collaboration.configure({ document: ydoc }),
+      CollaborationCursor.configure({
+        provider,
+        user: {
+          name: "User Name",
+          color: "#ffcc00",
+        },
       }),
     ],
     content: `
