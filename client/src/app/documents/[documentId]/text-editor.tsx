@@ -37,6 +37,7 @@ const ydoc = new Y.Doc();
 
 function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
+
   const provider = useMemo(() => {
     return new WebsocketProvider("ws://localhost:1234", documentId, ydoc, {
       connect: true,
