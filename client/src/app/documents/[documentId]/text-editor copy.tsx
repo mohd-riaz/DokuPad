@@ -37,13 +37,7 @@ import MarginRuler from "./margin-ruler";
 
 const ydoc = new Y.Doc();
 
-function TextEditor({
-  documentId,
-  token,
-}: {
-  documentId: string;
-  token: string;
-}) {
+function TextEditor({ documentId }: { documentId: string }) {
   const { setEditor } = useEditorStore();
 
   // const provider = useMemo(() => {
@@ -65,7 +59,7 @@ function TextEditor({
       // Disable broadcast channel synchronization (by default the broadcast channel synchronization is enabled)
       disableBc: false,
       // Specify the authentication data to send to the server on handshake
-      auth: { token: token }, // Example: { token: 'valid-token' }
+      auth: { token: "gugugu" }, // Example: { token: 'valid-token' }
     };
     return new SocketIOProvider(
       "ws://localhost:1234",
@@ -73,7 +67,7 @@ function TextEditor({
       ydoc,
       configuration
     );
-  }, [documentId, token]);
+  }, [documentId]);
 
   // useEffect(() => {
   //   if (!provider) return;
