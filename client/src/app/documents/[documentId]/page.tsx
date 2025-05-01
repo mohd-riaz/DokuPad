@@ -12,7 +12,7 @@ function DocumentPage({ params }: { params: Promise<{ documentId: string }> }) {
 
   useEffect(() => {
     const fetch = async () => {
-      const token = await getToken();
+      const token = await getToken({ template: "convex" });
       const { documentId } = await params;
       setToken(token);
       setDocumentId(documentId);
@@ -22,7 +22,10 @@ function DocumentPage({ params }: { params: Promise<{ documentId: string }> }) {
 
   return (
     documentId &&
-    token && (
+    token &&
+    userId &&
+    isLoaded &&
+    isSignedIn && (
       <div className="min-h-screen bg-primary-foreground overflow-auto">
         <div className="flex flex-col fixed top-0 left-0 right-0 z-10 bg-primary-foreground print:hidden">
           <Navbar />

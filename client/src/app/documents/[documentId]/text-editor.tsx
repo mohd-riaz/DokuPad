@@ -46,12 +46,6 @@ function TextEditor({
 }) {
   const { setEditor } = useEditorStore();
 
-  // const provider = useMemo(() => {
-  //   return new WebsocketProvider("ws://localhost:1234", documentId, ydoc, {
-  //     connect: true,
-  //   });
-  // }, [documentId]);
-
   const provider = useMemo(() => {
     const configuration = {
       // Enable/Disable garbage collection (by default the garbage collection is enabled)
@@ -74,24 +68,6 @@ function TextEditor({
       configuration
     );
   }, [documentId, token]);
-
-  // useEffect(() => {
-  //   if (!provider) return;
-
-  //   provider.on("sync", (isSynced) => {
-  //     if (isSynced) {
-  //       console.log("✅ Document is synced.");
-  //     }
-  //   });
-
-  //   provider.socket.on("connect_error", (err) => {
-  //     console.error("❌ Connection failed:", err.message);
-  //   });
-
-  //   return () => {
-  //     // provider.socket.off("auth-denied", onAuthDenied);
-  //   };
-  // }, [provider]);
 
   const editor = useEditor({
     onCreate({ editor }) {

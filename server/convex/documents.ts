@@ -94,7 +94,9 @@ export const removeById = mutation({
     }
 
     const isOwner = document.ownerId === user.subject;
-    const isMember = document.organizationId === organizationId;
+    const isMember =
+      document.organizationId !== undefined &&
+      document.organizationId === organizationId;
 
     if (!isOwner && !isMember) {
       throw new ConvexError("Unauthorized");
