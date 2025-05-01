@@ -28,30 +28,31 @@ io.of(/^\/yjs\|.*/).use(async (socket, next) => {
   const authenticated = await authenticate(token, documentId);
   console.log("authenticated: ", authenticated);
   if (authenticated) {
-    const document = httpClient
-      .query(api.documents.getDocumentById, { documentId })
-      .then(console.log);
+    const document = await httpClient.query(api.documents.getDocumentById, {
+      documentId,
+    });
 
     if (!document.organizationId) {
-      next(new Error("Unauthorized"));
       console.log("Unauthorized");
-      socket.disconnect();
-    }
-
-    if (document.organizationId !== token.organizationId) {
+      socket.disconnect(true);
       next(new Error("Unauthorized"));
+    } else if (document.organizationId !== authenticated.organization_id) {
       console.log("Unauthorized");
-      socket.disconnect();
+      socket.disconnect(true);
+      next(new Error("Unauthorized"));
+    } else {
+      console.log("Authorized");
+      return next();
     }
-
-    return next();
   }
-  next(new Error("Unauthorized"));
   console.log("Unauthorized");
-  socket.disconnect();
+  next(new Error("Unauthorized"));
+  socket.disconnect(true);
 });
 
-const ySocketIO = new YSocketIO(io);
+const ySocketIO = new YSocketIO(io, {
+  ydocOptions: { gc: true },
+});
 
 ySocketIO.initialize();
 
@@ -65,8 +66,7 @@ async function authenticate(token) {
     // Verify the token using Clerk's SDK
     const session = await clerk.verifyToken(token);
     console.log(session);
-
-    return true;
+    return session;
   } catch (error) {
     return false;
   }
