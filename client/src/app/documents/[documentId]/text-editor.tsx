@@ -59,10 +59,10 @@ function TextEditor({
       // Disable broadcast channel synchronization (by default the broadcast channel synchronization is enabled)
       disableBc: false,
       // Specify the authentication data to send to the server on handshake
-      auth: { token: token }, // Example: { token: 'valid-token' }
+      auth: { token: token, documentId }, // Example: { token: 'valid-token' }
     };
     return new SocketIOProvider(
-      "ws://localhost:1234",
+      `ws://localhost:1234`,
       documentId,
       ydoc,
       configuration
