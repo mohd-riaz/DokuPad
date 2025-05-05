@@ -22,6 +22,8 @@ export const createDocument = mutation({
       ownerId: user.subject,
       organizationId,
       initialContent: args.initialContent,
+      rightMargin: 56,
+      leftMargin: 56,
     });
 
     return documentId;
@@ -94,9 +96,7 @@ export const removeById = mutation({
     }
 
     const isOwner = document.ownerId === user.subject;
-    const isMember =
-      document.organizationId !== undefined &&
-      document.organizationId === organizationId;
+    const isMember = document.organizationId === organizationId;
 
     if (!isOwner && !isMember) {
       throw new ConvexError("Unauthorized");
@@ -148,5 +148,17 @@ export const getDocumentById = query({
     }
 
     return document;
+  },
+});
+
+export const saveDocumentById = mutation({
+  args: { id: v.id("documents"), initialContent: v.string() },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.get(args.id);
+
+    if (!document) {
+      throw new ConvexError("Document not found");
+    }
+    return await ctx.db.patch(args.id, { initialContent: args.initialContent });
   },
 });

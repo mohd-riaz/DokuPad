@@ -34,6 +34,9 @@ import { CustomImageResize } from "@/extensions/custom-image-resize";
 import { LineHeightExtension } from "@/extensions/line-height";
 
 import MarginRuler from "./margin-ruler";
+import { Button } from "@/components/ui/button";
+import { io } from "socket.io-client";
+import FullscreenLoader from "@/components/fullscreen-loader";
 
 const ydoc = new Y.Doc();
 
@@ -45,6 +48,7 @@ function TextEditor({
   token: string;
 }) {
   const { setEditor } = useEditorStore();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const provider = useMemo(() => {
     const configuration = {
@@ -68,6 +72,20 @@ function TextEditor({
       configuration
     );
   }, [documentId, token]);
+
+  useEffect(() => {
+    if (!provider) return;
+
+    const handleSync = (isSynced: boolean) => {
+      setIsLoaded(isSynced);
+    };
+
+    provider.on("sync", handleSync);
+
+    return () => {
+      provider.off("sync", handleSync);
+    };
+  }, [provider]);
 
   const editor = useEditor({
     onCreate({ editor }) {
@@ -158,7 +176,7 @@ function TextEditor({
     immediatelyRender: false,
   });
 
-  return (
+  return isLoaded ? (
     <div
       className={`size-full overflow-x-auto bg-primary-foreground px-4 print:p-0 print:bg-white print:overflow-visible text-black`}
     >
@@ -169,6 +187,8 @@ function TextEditor({
         <EditorContent editor={editor} />
       </div>
     </div>
+  ) : (
+    <FullscreenLoader label="Loading document..." />
   );
 }
 export default TextEditor;
