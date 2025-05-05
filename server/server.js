@@ -43,7 +43,10 @@ ySocketIO.on("document-loaded", async (doc) => {
   });
 
   if (existing?.initialContent) {
-    const update = Buffer.from(existing.initialContent || "", "base64");
+    const update = new Uint8Array(existing.initialContent);
+    if (update.length === 0) {
+      return;
+    }
     Y.applyUpdate(doc, update);
     console.log(`🔄 Loaded ${doc.name} from Convex`);
   } else {
@@ -53,21 +56,23 @@ ySocketIO.on("document-loaded", async (doc) => {
 
 async function saveContent(doc) {
   const update = Y.encodeStateAsUpdate(doc);
-  const base64 = Buffer.from(update).toString("base64");
-  console.log(base64);
+  console.log(update.buffer);
 
   await httpClient.mutation(api.documents.saveDocumentById, {
     id: doc.name,
-    initialContent: base64,
+    initialContent: update.buffer,
   });
 
   console.log(`💾 Saved ${doc.name} to Convex`);
 }
 
-ySocketIO.on("document-destroy", saveContent);
-ySocketIO.on("all-document-connections-closed", async (doc) => {
+ySocketIO.on("document-destroy", async (doc) => {
+  console.log("doc destroyed");
   await saveContent(doc);
-  ySocketIO.destroy(doc);
+});
+ySocketIO.on("all-document-connections-closed", async (doc) => {
+  console.log("all docs closed");
+  doc.destroy();
 });
 
 const PORT = process.env.PORT || 1234;

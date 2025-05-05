@@ -21,7 +21,7 @@ export default function TemplateGallery() {
 
   const onTemplateClick = (title: string, initialContent: string) => {
     setIsCreating(true);
-    createDocument({ title, initialContent })
+    createDocument({ title })
       .catch(() => toast.error("Something went wrong"))
       .then((documentId) => {
         toast.success("Document created");

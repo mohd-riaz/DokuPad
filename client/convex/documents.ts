@@ -5,7 +5,7 @@ import { paginationOptsValidator } from "convex/server";
 export const createDocument = mutation({
   args: {
     title: v.optional(v.string()),
-    initialContent: v.optional(v.string()),
+    initialContent: v.optional(v.bytes()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -152,7 +152,7 @@ export const getDocumentById = query({
 });
 
 export const saveDocumentById = mutation({
-  args: { id: v.id("documents"), initialContent: v.string() },
+  args: { id: v.id("documents"), initialContent: v.bytes() },
   handler: async (ctx, args) => {
     const document = await ctx.db.get(args.id);
 
