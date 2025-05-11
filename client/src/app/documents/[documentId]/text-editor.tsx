@@ -34,8 +34,6 @@ import { CustomImageResize } from "@/extensions/custom-image-resize";
 import { LineHeightExtension } from "@/extensions/line-height";
 
 import MarginRuler from "./margin-ruler";
-import { Button } from "@/components/ui/button";
-import { io } from "socket.io-client";
 import FullscreenLoader from "@/components/fullscreen-loader";
 
 const ydoc = new Y.Doc();

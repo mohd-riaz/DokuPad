@@ -5,11 +5,11 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
+import { LoaderIcon } from "lucide-react";
 
 function DocumentInput({ title, id }: { title: string; id: Id<"documents"> }) {
   const [value, setValue] = useState(title);
 
-  const [isError, setIsError] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -73,7 +73,11 @@ function DocumentInput({ title, id }: { title: string; id: Id<"documents"> }) {
           {title}
         </span>
       )}
-      <BsCloudCheck />
+      {isPending ? (
+        <LoaderIcon className="size-4 animate-spin text-muted-foreground" />
+      ) : (
+        <BsCloudCheck className="size-4" />
+      )}
     </div>
   );
 }
