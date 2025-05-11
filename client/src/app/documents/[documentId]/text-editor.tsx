@@ -43,14 +43,21 @@ const ydoc = new Y.Doc();
 function TextEditor({
   documentId,
   token,
+  isCollaborative = true,
+  content,
 }: {
   documentId: string;
-  token: string;
+  token: string | undefined;
+  isCollaborative?: boolean;
+  content: ArrayBuffer;
 }) {
   const { setEditor } = useEditorStore();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const provider = useMemo(() => {
+    if (!isCollaborative) {
+      return null;
+    }
     const configuration = {
       // Enable/Disable garbage collection (by default the garbage collection is enabled)
       gcEnabled: true,
@@ -71,7 +78,7 @@ function TextEditor({
       ydoc,
       configuration
     );
-  }, [documentId, token]);
+  }, [documentId, token, isCollaborative]);
 
   useEffect(() => {
     if (!provider) return;
@@ -86,6 +93,21 @@ function TextEditor({
       provider.off("sync", handleSync);
     };
   }, [provider]);
+
+  //-----------------add personal document functions here----------------
+  //load personal document from database
+  useEffect(() => {
+    if (isCollaborative) {
+      return;
+    }
+    const updateUint8 = new Uint8Array(content);
+    if (updateUint8.length > 0) {
+      Y.applyUpdate(ydoc, updateUint8);
+    }
+    setIsLoaded(true);
+  }, [isCollaborative, content]);
+
+  //todo debounced update for autosaving
 
   const editor = useEditor({
     onCreate({ editor }) {
@@ -149,30 +171,19 @@ function TextEditor({
         defaultProtocol: "https",
       }),
       Collaboration.configure({ document: ydoc }),
-      CollaborationCursor.configure({
-        provider,
-        user: {
-          name: "User Name",
-          color: "#ffcc00",
-        },
-      }),
+      ...(isCollaborative
+        ? [
+            CollaborationCursor.configure({
+              provider,
+              user: {
+                name: "User Name",
+                color: "#ffcc00",
+              },
+            }),
+          ]
+        : []),
     ],
-    content: `
-    <table>
-      <tbody>
-        <tr>
-          <th>Name</th>
-          <th colspan="3">Description</th>
-        </tr>
-        <tr>
-          <td>Cyndi Lauper</td>
-          <td>Singer</td>
-          <td>Songwriter</td>
-          <td>Actress</td>
-        </tr>
-      </tbody>
-    </table>
-  `,
+    content: "",
     immediatelyRender: false,
   });
 

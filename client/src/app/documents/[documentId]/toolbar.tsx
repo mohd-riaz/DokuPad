@@ -323,6 +323,7 @@ const ImageButton = () => {
     try {
       const formData = new FormData();
       formData.append("image", file);
+      formData.append("expiration", "0");
 
       const response = await fetch(
         `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_KEY}`, // Get free key at imgbb.com

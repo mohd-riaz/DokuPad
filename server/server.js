@@ -45,6 +45,7 @@ ySocketIO.on("document-loaded", async (doc) => {
   if (existing?.initialContent) {
     const update = new Uint8Array(existing.initialContent);
     if (update.length === 0) {
+      console.log(`Empty data for ${doc.name}`);
       return;
     }
     Y.applyUpdate(doc, update);
