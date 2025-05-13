@@ -6,11 +6,12 @@ import { api } from "../../../../convex/_generated/api";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
 import { LoaderIcon } from "lucide-react";
+import { useEditorStore } from "@/store/use-editor-store";
 
 function DocumentInput({ title, id }: { title: string; id: Id<"documents"> }) {
   const [value, setValue] = useState(title);
 
-  const [isPending, setIsPending] = useState(false);
+  const { isPending, setIsPending } = useEditorStore();
   const [isEditing, setIsEditing] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);

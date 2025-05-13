@@ -57,7 +57,6 @@ ySocketIO.on("document-loaded", async (doc) => {
 
 async function saveContent(doc) {
   const update = Y.encodeStateAsUpdate(doc);
-  console.log(update.buffer);
 
   await httpClient.mutation(api.documents.saveDocumentById, {
     id: doc.name,

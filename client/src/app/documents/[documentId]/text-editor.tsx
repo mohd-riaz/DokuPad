@@ -35,6 +35,11 @@ import { LineHeightExtension } from "@/extensions/line-height";
 
 import MarginRuler from "./margin-ruler";
 import FullscreenLoader from "@/components/fullscreen-loader";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 const ydoc = new Y.Doc();
 
@@ -49,7 +54,7 @@ function TextEditor({
   isCollaborative?: boolean;
   content: ArrayBuffer;
 }) {
-  const { setEditor } = useEditorStore();
+  const { setEditor, setIsPending } = useEditorStore();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const provider = useMemo(() => {
@@ -104,6 +109,32 @@ function TextEditor({
     }
     setIsLoaded(true);
   }, [isCollaborative, content]);
+
+  const mutate = useMutation(api.documents.saveDocumentById);
+
+  const debouncedUpdate = useDebounce(() => {
+    const update = Y.encodeStateAsUpdate(ydoc);
+    setIsPending(true);
+    mutate({
+      id: documentId as Id<"documents">,
+      initialContent: update.buffer as ArrayBuffer,
+    })
+      .then(() => console.log("Document saved."))
+      .catch(() => toast.error("Something went wrong"))
+      .finally(() => setIsPending(false));
+  }, 5000);
+
+  useEffect(() => {
+    if (!isCollaborative) {
+      ydoc.on("update", debouncedUpdate);
+    }
+
+    return () => {
+      if (!isCollaborative) {
+        ydoc.off("update", debouncedUpdate);
+      }
+    };
+  }, [isCollaborative, debouncedUpdate]);
 
   //todo debounced update for autosaving
 

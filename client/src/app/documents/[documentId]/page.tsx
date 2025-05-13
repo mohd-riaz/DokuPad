@@ -23,7 +23,10 @@ const DocumentPage = async ({
       documentId: documentId as Id<"documents">,
     },
     { token }
-  );
+  ).then((document) => {
+    console.log("Document loaded.");
+    return document;
+  });
 
   return (
     <Document
