@@ -48,11 +48,15 @@ function TextEditor({
   token,
   isCollaborative = true,
   content,
+  leftMargin = 56,
+  rightMargin = 56,
 }: {
   documentId: string;
   token: string | undefined;
   isCollaborative?: boolean;
   content: ArrayBuffer;
+  leftMargin?: number;
+  rightMargin?: number;
 }) {
   const { setEditor, setIsPending } = useEditorStore();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -110,7 +114,7 @@ function TextEditor({
     setIsLoaded(true);
   }, [isCollaborative, content]);
 
-  const mutate = useMutation(api.documents.saveDocumentById);
+  const mutate = useMutation(api.documents.saveDocumentByIdClient);
 
   const debouncedUpdate = useDebounce(() => {
     const update = Y.encodeStateAsUpdate(ydoc);
@@ -165,7 +169,7 @@ function TextEditor({
     },
     editorProps: {
       attributes: {
-        style: `padding-left: 56px; padding-right: 56px;`,
+        style: `padding-left: ${leftMargin}px; padding-right: ${rightMargin}px;`,
         class: `focus:outline-none print:border-0 bg-white border border-[#c7c7c7] flex flex-col min-h-[1054px] w-[816px] pt-10 pb-10 cursor-text`,
       },
     },

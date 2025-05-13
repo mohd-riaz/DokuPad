@@ -18,7 +18,7 @@ const DocumentPage = async ({
   }
 
   const preloadedDocument = await preloadQuery(
-    api.documents.getDocumentById,
+    api.documents.getDocumentByIdClient,
     {
       documentId: documentId as Id<"documents">,
     },
