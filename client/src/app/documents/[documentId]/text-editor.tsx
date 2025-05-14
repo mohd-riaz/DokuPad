@@ -60,6 +60,8 @@ function TextEditor({
 }) {
   const { setEditor, setIsPending } = useEditorStore();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [leftMargin_, setLeftMargin] = useState(leftMargin);
+  const [rightMargin_, setRightMargin] = useState(rightMargin);
 
   const provider = useMemo(() => {
     if (!isCollaborative) {
@@ -90,8 +92,10 @@ function TextEditor({
   useEffect(() => {
     if (!provider) return;
 
-    const handleSync = (isSynced: boolean) => {
-      setIsLoaded(isSynced);
+    const handleSync = async (isSynced: boolean) => {
+      setTimeout(() => {
+        setIsLoaded(isSynced);
+      }, 500);
     };
 
     provider.on("sync", handleSync);
@@ -169,7 +173,7 @@ function TextEditor({
     },
     editorProps: {
       attributes: {
-        style: `padding-left: ${leftMargin}px; padding-right: ${rightMargin}px;`,
+        style: `padding-left: ${leftMargin_}px; padding-right: ${rightMargin_}px;`,
         class: `focus:outline-none print:border-0 bg-white border border-[#c7c7c7] flex flex-col min-h-[1054px] w-[816px] pt-10 pb-10 cursor-text`,
       },
     },
@@ -224,7 +228,15 @@ function TextEditor({
     <div
       className={`size-full overflow-x-auto bg-primary-foreground px-4 print:p-0 print:bg-white print:overflow-visible text-black`}
     >
-      <MarginRuler />
+      <MarginRuler
+        left={leftMargin}
+        right={rightMargin}
+        documentId={documentId}
+        leftMargin={leftMargin_}
+        setLeftMargin={setLeftMargin}
+        rightMargin={rightMargin_}
+        setRightMargin={setRightMargin}
+      />
       <div
         className={`min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0`}
       >

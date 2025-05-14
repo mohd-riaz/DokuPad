@@ -19,7 +19,7 @@ function Document({ preloadedDocument, documentId, token }: DocumentProps) {
     <div className="min-h-screen bg-primary-foreground overflow-auto">
       <div className="flex flex-col fixed top-0 left-0 right-0 z-10 bg-primary-foreground print:hidden">
         <Navbar data={document} />
-        <Toolbar />
+        <Toolbar/>
       </div>
       <div className="pt-[122px] print:pt-0">
         <TextEditor
@@ -27,6 +27,8 @@ function Document({ preloadedDocument, documentId, token }: DocumentProps) {
           content={document.initialContent ?? new ArrayBuffer()}
           token={token}
           isCollaborative={document.organizationId !== undefined}
+          leftMargin={document.leftMargin}
+          rightMargin={document.rightMargin}
         />
       </div>
     </div>

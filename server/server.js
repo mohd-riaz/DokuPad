@@ -36,8 +36,6 @@ const ySocketIO = new YSocketIO(io, {
 ySocketIO.initialize();
 
 ySocketIO.on("document-loaded", async (doc) => {
-  console.log(doc.name);
-
   const existing = await httpClient.query(api.documents.getDocumentById, {
     documentId: doc.name,
   });
