@@ -34,48 +34,19 @@ import { CustomImageResize } from "@/extensions/custom-image-resize";
 import { LineHeightExtension } from "@/extensions/line-height";
 
 import MarginRuler from "./margin-ruler";
-import FullscreenLoader from "@/components/fullscreen-loader";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
-import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
 
 const ydoc = new Y.Doc();
 
-function TextEditor({
-  documentId,
-  token,
-  isCollaborative = true,
-  content,
-  leftMargin = 56,
-  rightMargin = 56,
-}: {
-  documentId: string;
-  token: string | undefined;
-  isCollaborative?: boolean;
-  content: ArrayBuffer;
-  leftMargin?: number;
-  rightMargin?: number;
-}) {
-  const { setEditor, setIsPending } = useEditorStore();
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [leftMargin_, setLeftMargin] = useState(leftMargin);
-  const [rightMargin_, setRightMargin] = useState(rightMargin);
+function TextEditor({ documentId }: { documentId: string }) {
+  const { setEditor } = useEditorStore();
 
-  const { user } = useUser();
-
-  const hue =
-    Math.abs(
-      user?.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0
-    ) % 360;
-  const color = `hsl(${hue}, 80%, 60%)`;
+  // const provider = useMemo(() => {
+  //   return new WebsocketProvider("ws://localhost:1234", documentId, ydoc, {
+  //     connect: true,
+  //   });
+  // }, [documentId]);
 
   const provider = useMemo(() => {
-    if (!isCollaborative) {
-      return null;
-    }
     const configuration = {
       // Enable/Disable garbage collection (by default the garbage collection is enabled)
       gcEnabled: true,
@@ -88,54 +59,33 @@ function TextEditor({
       // Disable broadcast channel synchronization (by default the broadcast channel synchronization is enabled)
       disableBc: false,
       // Specify the authentication data to send to the server on handshake
-      auth: { token: token, documentId }, // Example: { token: 'valid-token' }
+      auth: { token: "gugugu" }, // Example: { token: 'valid-token' }
     };
     return new SocketIOProvider(
-      `ws://localhost:1234`,
+      "ws://localhost:1234",
       documentId,
       ydoc,
       configuration
     );
-  }, [documentId, token, isCollaborative]);
+  }, [documentId]);
 
-  //-----------------add personal document functions here----------------
-  //load personal document from database
-  useEffect(() => {
-    if (isCollaborative) {
-      return;
-    }
-    const updateUint8 = new Uint8Array(content);
-    if (updateUint8.length > 0) {
-      Y.applyUpdate(ydoc, updateUint8);
-    }
-    setIsLoaded(true);
-  }, [isCollaborative, content]);
+  // useEffect(() => {
+  //   if (!provider) return;
 
-  const mutate = useMutation(api.documents.saveDocumentByIdClient);
+  //   provider.on("sync", (isSynced) => {
+  //     if (isSynced) {
+  //       console.log("✅ Document is synced.");
+  //     }
+  //   });
 
-  const debouncedUpdate = useDebounce(() => {
-    const update = Y.encodeStateAsUpdate(ydoc);
-    setIsPending(true);
-    mutate({
-      id: documentId as Id<"documents">,
-      initialContent: update.buffer as ArrayBuffer,
-    })
-      .then(() => console.log("Document saved."))
-      .catch(() => toast.error("Something went wrong"))
-      .finally(() => setIsPending(false));
-  }, 5000);
+  //   provider.socket.on("connect_error", (err) => {
+  //     console.error("❌ Connection failed:", err.message);
+  //   });
 
-  useEffect(() => {
-    if (!isCollaborative) {
-      ydoc.on("update", debouncedUpdate);
-    }
-
-    return () => {
-      if (!isCollaborative) {
-        ydoc.off("update", debouncedUpdate);
-      }
-    };
-  }, [isCollaborative, debouncedUpdate]);
+  //   return () => {
+  //     // provider.socket.off("auth-denied", onAuthDenied);
+  //   };
+  // }, [provider]);
 
   const editor = useEditor({
     onCreate({ editor }) {
@@ -164,7 +114,7 @@ function TextEditor({
     },
     editorProps: {
       attributes: {
-        style: `padding-left: ${leftMargin_}px; padding-right: ${rightMargin_}px;`,
+        style: `padding-left: 56px; padding-right: 56px;`,
         class: `focus:outline-none print:border-0 bg-white border border-[#c7c7c7] flex flex-col min-h-[1054px] w-[816px] pt-10 pb-10 cursor-text`,
       },
     },
@@ -199,72 +149,44 @@ function TextEditor({
         defaultProtocol: "https",
       }),
       Collaboration.configure({ document: ydoc }),
-      ...(isCollaborative
-        ? [
-            CollaborationCursor.configure({
-              provider,
-              user: {
-                name:
-                  user?.fullName ||
-                  user?.firstName ||
-                  user?.lastName ||
-                  user?.emailAddresses[0].emailAddress ||
-                  "Anonymous",
-                color,
-              },
-            }),
-          ]
-        : []),
+      CollaborationCursor.configure({
+        provider,
+        user: {
+          name: "User Name",
+          color: "#ffcc00",
+        },
+      }),
     ],
-    content: "",
+    content: `
+    <table>
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <th colspan="3">Description</th>
+        </tr>
+        <tr>
+          <td>Cyndi Lauper</td>
+          <td>Singer</td>
+          <td>Songwriter</td>
+          <td>Actress</td>
+        </tr>
+      </tbody>
+    </table>
+  `,
     immediatelyRender: false,
   });
 
-  useEffect(() => {
-    if (!provider || !editor) return;
-
-    const handleSync = async (isSynced: boolean) => {
-      setTimeout(() => {
-        setIsLoaded(isSynced);
-      }, 500);
-    };
-
-    const handleUnload = () => {
-      editor.commands.blur();
-      provider.awareness.setLocalState(null); // cleanup awareness state
-    };
-
-    provider.on("sync", handleSync);
-    window.addEventListener("beforeunload", handleUnload);
-
-    return () => {
-      provider.off("sync", handleSync);
-      window.removeEventListener("beforeunload", handleUnload);
-      handleUnload(); // cleanup on component unmount too
-    };
-  }, [provider, editor]);
-
-  return isLoaded ? (
+  return (
     <div
       className={`size-full overflow-x-auto bg-primary-foreground px-4 print:p-0 print:bg-white print:overflow-visible text-black`}
     >
-      <MarginRuler
-        left={leftMargin}
-        right={rightMargin}
-        documentId={documentId}
-        leftMargin={leftMargin_}
-        setLeftMargin={setLeftMargin}
-        rightMargin={rightMargin_}
-        setRightMargin={setRightMargin}
-      />
+      <MarginRuler />
       <div
         className={`min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0`}
       >
         <EditorContent editor={editor} />
       </div>
     </div>
-  ) : (
-    <FullscreenLoader label="Loading document..." />
   );
 }
 export default TextEditor;

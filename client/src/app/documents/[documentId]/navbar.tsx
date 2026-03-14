@@ -53,8 +53,9 @@ import { useState } from "react";
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
+import { Doc } from "../../../../convex/_generated/dataModel";
 
-function Navbar() {
+function Navbar({ data }: { data: Doc<"documents"> }) {
   const { editor } = useEditorStore();
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
@@ -70,16 +71,35 @@ function Navbar() {
     editor?.chain().focus().setImage({ src }).run();
   };
 
+  async function uploadToImgBB(file: File) {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("expiration", "0");
+
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_KEY}`, // Get free key at imgbb.com
+        { method: "POST", body: formData }
+      );
+
+      const res = await response.json();
+      return res.data.url; // Direct image URL (e.g., "https://i.ibb.co/abc123/image.jpg")
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const onUpload = () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
+    input.accept = ".jpg,.jpeg,.png,.gif,.webp";
 
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        const imageUrl_ = URL.createObjectURL(file);
-        onChange(imageUrl_);
+        const url = await uploadToImgBB(file);
+        console.log(url);
+        onChange(url);
       }
     };
 
@@ -108,7 +128,7 @@ function Navbar() {
     const blob = new Blob([JSON.stringify(content)], {
       type: "application/json",
     });
-    onDownload(blob, `document.json`);
+    onDownload(blob, `${data.title}.json`);
   };
 
   const onSaveHTML = () => {
@@ -117,7 +137,7 @@ function Navbar() {
     const blob = new Blob([content], {
       type: "text/html",
     });
-    onDownload(blob, `document.html`);
+    onDownload(blob, `${data.title}.html`);
   };
 
   const onSaveText = () => {
@@ -126,7 +146,7 @@ function Navbar() {
     const blob = new Blob([content], {
       type: "text/plain",
     });
-    onDownload(blob, `document.txt`);
+    onDownload(blob, `${data.title}.txt`);
   };
 
   return (
@@ -138,7 +158,7 @@ function Navbar() {
           <Logo />
         </Link>
         <div className="flex flex-col">
-          <DocumentInput />
+          <DocumentInput title={data.title} id={data._id}/>
 
           <div className="flex">
             <Menubar

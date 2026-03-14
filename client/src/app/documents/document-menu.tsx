@@ -26,8 +26,8 @@ function DocumentMenu({ documentId, title, onNewTab }: DocumentMenuProps) {
   const renameState = useState(false);
   const removeState = useState(false);
 
-  const [renameOpen, isRenameOpen] = renameState;
-  const [removeOpen, isRemoveOpen] = removeState;
+  const [renameOpen, setRenameOpen] = renameState;
+  const [removeOpen, setRemoveOpen] = removeState;
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   return (
@@ -60,7 +60,7 @@ function DocumentMenu({ documentId, title, onNewTab }: DocumentMenuProps) {
             }}
             onClick={(e) => {
               e.stopPropagation();
-              isRenameOpen(true);
+              setRenameOpen(true);
               setDropdownOpen(false);
             }}
           >
@@ -73,7 +73,7 @@ function DocumentMenu({ documentId, title, onNewTab }: DocumentMenuProps) {
             }}
             onClick={(e) => {
               e.stopPropagation();
-              isRemoveOpen(true);
+              setRemoveOpen(true);
               setDropdownOpen(false);
             }}
           >

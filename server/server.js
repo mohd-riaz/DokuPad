@@ -1,16 +1,103 @@
-const http = require("http");
-const WebSocket = require("ws");
-const { setupWSConnection } = require("y-websocket/bin/utils");
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import { YSocketIO } from "y-socket.io/dist/server";
+import { Clerk, hasValidSignature } from "@clerk/clerk-sdk-node";
+import * as dotenv from "dotenv";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "./convex/_generated/api.js";
+import * as Y from "yjs";
 
-require("dotenv").config();
+dotenv.config();
 
-const server = http.createServer();
-const wss = new WebSocket.Server({ server });
+const app = express();
+const server = http.createServer(app);
 
-wss.on("connection", async (conn, req) => {
-  setupWSConnection(conn, req);
+const clerk = new Clerk({ secretKey: process.env.CLERK_SECRET_KEY });
+const httpClient = new ConvexHttpClient(process.env.CONVEX_URL);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
 
-server.listen(1234, () => {
-  console.log("✅ WebSocket server running on ws://localhost:1234");
+const ySocketIO = new YSocketIO(io, {
+  ydocOptions: { gc: true },
+  authenticate: async (handshake) => {
+    return await authenticateToken(
+      handshake.auth.token,
+      handshake.auth.documentId
+    );
+  },
 });
+
+ySocketIO.initialize();
+
+ySocketIO.on("document-loaded", async (doc) => {
+  const existing = await httpClient.query(api.documents.getDocumentById, {
+    documentId: doc.name,
+  });
+
+  if (existing?.initialContent) {
+    const update = new Uint8Array(existing.initialContent);
+    if (update.length === 0) {
+      console.log(`Empty data for ${doc.name}`);
+      return;
+    }
+    Y.applyUpdate(doc, update);
+    console.log(`🔄 Loaded ${doc.name} from Convex`);
+  } else {
+    console.log(`🆕 No existing data for ${doc.name}`);
+  }
+});
+
+async function saveContent(doc) {
+  const update = Y.encodeStateAsUpdate(doc);
+
+  await httpClient.mutation(api.documents.saveDocumentById, {
+    id: doc.name,
+    initialContent: update.buffer,
+  });
+
+  console.log(`💾 Saved ${doc.name} to Convex`);
+}
+
+ySocketIO.on("document-destroy", async (doc) => {
+  console.log("doc destroyed");
+  await saveContent(doc);
+});
+ySocketIO.on("all-document-connections-closed", async (doc) => {
+  console.log("all docs closed");
+  doc.destroy();
+});
+
+const PORT = process.env.PORT || 1234;
+server.listen(PORT, () => {
+  console.log(`✅ Yjs server running at http://localhost:${PORT}`);
+});
+
+async function authenticateToken(token, documentId) {
+  try {
+    // Verify the token using Clerk's SDK
+    const session = await clerk.verifyToken(token);
+    const document = await httpClient.query(api.documents.getDocumentById, {
+      documentId,
+    });
+
+    if (!document.organizationId) {
+      console.log("Unauthorized");
+      return false;
+    } else if (document.organizationId !== session.organization_id) {
+      console.log("Unauthorized");
+      return false;
+    } else {
+      console.log("Authorized");
+      return true;
+    }
+  } catch (error) {
+    console.log("Error", error);
+    return false;
+  }
+}

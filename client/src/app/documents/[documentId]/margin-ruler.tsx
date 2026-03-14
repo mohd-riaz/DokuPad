@@ -1,15 +1,65 @@
+import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
+import { useEditorStore } from "@/store/use-editor-store";
+import { useMutation } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 const markers = Array.from({ length: 83 }, (_, i) => i);
 
-export default function MarginRuler() {
-  const [leftMargin, setLeftMargin] = useState(56);
-  const [rightMargin, setRightMargin] = useState(56);
+export default function MarginRuler({
+  left,
+  right,
+  documentId,
+  leftMargin,
+  setLeftMargin,
+  rightMargin,
+  setRightMargin,
+}: {
+  left: number;
+  right: number;
+  documentId: string;
+  leftMargin: number;
+  setLeftMargin: (margin: number) => void;
+  rightMargin: number;
+  setRightMargin: (margin: number) => void;
+}) {
+  const { setIsPending } = useEditorStore();
 
   const [isDraggingLeft, setIsDraggingLeft] = useState(false);
   const [isDraggingRight, setIsDraggingRight] = useState(false);
+
+  const leftUpdate = useMutation(api.documents.updateLeftMargin);
+  const rightUpdate = useMutation(api.documents.updateRightMargin);
+
+  useEffect(() => {
+    setLeftMargin(left);
+  }, [left, setLeftMargin]);
+
+  useEffect(() => {
+    setRightMargin(right);
+  }, [right, setRightMargin]);
+
+  const leftDebouncedUpdate = useDebounce((newValue: number) => {
+    if (newValue === left) return;
+    setIsPending(true);
+    leftUpdate({ id: documentId as Id<"documents">, leftMargin: newValue })
+      .then(() => console.log("Left margin updated"))
+      .catch(() => toast.error("Something went wrong"))
+      .finally(() => setIsPending(false));
+  });
+
+  const rightDebouncedUpdate = useDebounce((newValue: number) => {
+    if (newValue === right) return;
+    setIsPending(true);
+    rightUpdate({ id: documentId as Id<"documents">, rightMargin: newValue })
+      .then(() => console.log("Right margin updated"))
+      .catch(() => toast.error("Something went wrong"))
+      .finally(() => setIsPending(false));
+  });
 
   const rulerRef = useRef<HTMLDivElement>(null);
 
@@ -28,10 +78,12 @@ export default function MarginRuler() {
 
   const handleLeftDoubleClick = () => {
     setLeftMargin(56);
+    leftDebouncedUpdate(56);
   };
 
   const handleRightDoubleClick = () => {
     setRightMargin(56);
+    rightDebouncedUpdate(56);
   };
 
   useEffect(() => {
@@ -47,7 +99,8 @@ export default function MarginRuler() {
           if (isDraggingLeft) {
             const maxLeftPosition = 816 - rightMargin - buffer;
             const newLeftPosition = Math.min(rawPosition, maxLeftPosition);
-            setLeftMargin(newLeftPosition); //add collab
+            setLeftMargin(newLeftPosition);
+            leftDebouncedUpdate(newLeftPosition);
           } else if (isDraggingRight) {
             const maxRightPosition = 816 - (leftMargin + buffer);
             const newRightPosition = Math.max(816 - rawPosition, 0);
@@ -56,6 +109,7 @@ export default function MarginRuler() {
               maxRightPosition
             );
             setRightMargin(constrainedRightPosition);
+            rightDebouncedUpdate(constrainedRightPosition);
           }
         }
       }

@@ -1,23 +1,39 @@
-import Navbar from "./navbar";
-import TextEditor from "./text-editor";
-import Toolbar from "./toolbar";
+import { auth } from "@clerk/nextjs/server";
+import { preloadQuery } from "convex/nextjs";
+import Document from "./document";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 
-async function DocumentPage({
+const DocumentPage = async ({
   params,
 }: {
   params: Promise<{ documentId: string }>;
-}) {
+}) => {
   const { documentId } = await params;
+  const { getToken } = await auth();
+  const token = (await getToken({ template: "convex" })) ?? undefined;
+
+  if (!token) {
+    throw new Error("Unauthorized");
+  }
+
+  const preloadedDocument = await preloadQuery(
+    api.documents.getDocumentByIdClient,
+    {
+      documentId: documentId as Id<"documents">,
+    },
+    { token }
+  ).then((document) => {
+    console.log("Document loaded.");
+    return document;
+  });
+
   return (
-    <div className="min-h-screen bg-primary-foreground overflow-auto">
-      <div className="flex flex-col fixed top-0 left-0 right-0 z-10 bg-primary-foreground print:hidden">
-        <Navbar />
-        <Toolbar />
-      </div>
-      <div className="pt-[122px] print:pt-0">
-        <TextEditor documentId={documentId} />
-      </div>
-    </div>
+    <Document
+      preloadedDocument={preloadedDocument}
+      documentId={documentId}
+      token={token}
+    />
   );
-}
+};
 export default DocumentPage;
