@@ -40,6 +40,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 
 const ydoc = new Y.Doc();
 
@@ -62,6 +63,14 @@ function TextEditor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [leftMargin_, setLeftMargin] = useState(leftMargin);
   const [rightMargin_, setRightMargin] = useState(rightMargin);
+
+  const { user } = useUser();
+
+  const hue =
+    Math.abs(
+      user?.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0
+    ) % 360;
+  const color = `hsl(${hue}, 80%, 60%)`;
 
   const provider = useMemo(() => {
     if (!isCollaborative) {
@@ -88,22 +97,6 @@ function TextEditor({
       configuration
     );
   }, [documentId, token, isCollaborative]);
-
-  useEffect(() => {
-    if (!provider) return;
-
-    const handleSync = async (isSynced: boolean) => {
-      setTimeout(() => {
-        setIsLoaded(isSynced);
-      }, 500);
-    };
-
-    provider.on("sync", handleSync);
-
-    return () => {
-      provider.off("sync", handleSync);
-    };
-  }, [provider]);
 
   //-----------------add personal document functions here----------------
   //load personal document from database
@@ -143,8 +136,6 @@ function TextEditor({
       }
     };
   }, [isCollaborative, debouncedUpdate]);
-
-  //todo debounced update for autosaving
 
   const editor = useEditor({
     onCreate({ editor }) {
@@ -213,8 +204,13 @@ function TextEditor({
             CollaborationCursor.configure({
               provider,
               user: {
-                name: "User Name",
-                color: "#ffcc00",
+                name:
+                  user?.fullName ||
+                  user?.firstName ||
+                  user?.lastName ||
+                  user?.emailAddresses[0].emailAddress ||
+                  "Anonymous",
+                color,
               },
             }),
           ]
@@ -223,6 +219,30 @@ function TextEditor({
     content: "",
     immediatelyRender: false,
   });
+
+  useEffect(() => {
+    if (!provider || !editor) return;
+
+    const handleSync = async (isSynced: boolean) => {
+      setTimeout(() => {
+        setIsLoaded(isSynced);
+      }, 500);
+    };
+
+    const handleUnload = () => {
+      editor.commands.blur();
+      provider.awareness.setLocalState(null); // cleanup awareness state
+    };
+
+    provider.on("sync", handleSync);
+    window.addEventListener("beforeunload", handleUnload);
+
+    return () => {
+      provider.off("sync", handleSync);
+      window.removeEventListener("beforeunload", handleUnload);
+      handleUnload(); // cleanup on component unmount too
+    };
+  }, [provider, editor]);
 
   return isLoaded ? (
     <div
