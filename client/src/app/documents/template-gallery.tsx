@@ -13,6 +13,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { toast } from "sonner";
+import { base64ToArrayBuffer } from "@/lib/base64-to-array-buffer";
 
 export default function TemplateGallery() {
   const router = useRouter();
@@ -21,7 +22,10 @@ export default function TemplateGallery() {
 
   const onTemplateClick = (title: string, initialContent: string) => {
     setIsCreating(true);
-    createDocument({ title })
+
+    const arrayBuffer = base64ToArrayBuffer(initialContent);
+
+    createDocument({ title, initialContent:arrayBuffer})
       .catch(() => toast.error("Something went wrong"))
       .then((documentId) => {
         toast.success("Document created");
@@ -30,7 +34,7 @@ export default function TemplateGallery() {
       .finally(() => {
         setIsCreating(false);
       });
-  };
+    };
 
   return (
     <div className="bg-secondary">

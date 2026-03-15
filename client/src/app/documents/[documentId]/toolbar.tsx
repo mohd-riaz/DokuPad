@@ -714,14 +714,14 @@ function Toolbar() {
       },
     ],
     [
-      {
-        label: "Comment",
-        icon: MessageSquarePlusIcon,
-        onClick: () => {
-          console.log("todo comment funcitonality");
-        },
-        isActive: false, //todo
-      },
+      // {
+      //   label: "Comment",
+      //   icon: MessageSquarePlusIcon,
+      //   onClick: () => {
+      //     console.log("todo comment funcitonality");
+      //   },
+      //   isActive: false, //todo
+      // },
       {
         label: "List Todo",
         icon: ListTodoIcon,

@@ -42,8 +42,6 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 
-const ydoc = new Y.Doc();
-
 function TextEditor({
   documentId,
   token,
@@ -63,6 +61,9 @@ function TextEditor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [leftMargin_, setLeftMargin] = useState(leftMargin);
   const [rightMargin_, setRightMargin] = useState(rightMargin);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const ydoc = useMemo(() => new Y.Doc(), [documentId]);
 
   const { user } = useUser();
 
@@ -96,7 +97,7 @@ function TextEditor({
       ydoc,
       configuration
     );
-  }, [documentId, token, isCollaborative]);
+  }, [documentId, token, isCollaborative, ydoc]);
 
   //-----------------add personal document functions here----------------
   //load personal document from database
@@ -109,11 +110,11 @@ function TextEditor({
       Y.applyUpdate(ydoc, updateUint8);
     }
     setIsLoaded(true);
-  }, [isCollaborative, content]);
+  }, [isCollaborative, content, ydoc]);
 
   const mutate = useMutation(api.documents.saveDocumentByIdClient);
 
-  const debouncedUpdate = useDebounce(() => {
+  const autoDebouncedUpdate = useDebounce(() => {
     const update = Y.encodeStateAsUpdate(ydoc);
     setIsPending(true);
     mutate({
@@ -125,17 +126,42 @@ function TextEditor({
       .finally(() => setIsPending(false));
   }, 5000);
 
+  
+  const manualDebouncedUpdate = useDebounce(() => {
+    const update = Y.encodeStateAsUpdate(ydoc);
+    setIsPending(true);
+    mutate({
+      id: documentId as Id<"documents">,
+      initialContent: update.buffer as ArrayBuffer,
+    })
+    .then(() => console.log("Document saved."))
+    .catch(() => toast.error("Something went wrong"))
+    .finally(() => setIsPending(false));
+  });
+  
   useEffect(() => {
     if (!isCollaborative) {
-      ydoc.on("update", debouncedUpdate);
+      ydoc.on("update", autoDebouncedUpdate);
     }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // (event.ctrlKey) -> Windows/Linux
+      // (event.metaKey) -> macOS Command key
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault(); 
+        manualDebouncedUpdate()
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       if (!isCollaborative) {
-        ydoc.off("update", debouncedUpdate);
+        ydoc.off("update", autoDebouncedUpdate);
       }
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isCollaborative, debouncedUpdate]);
+  }, [ydoc, isCollaborative, autoDebouncedUpdate, manualDebouncedUpdate]);
 
   const editor = useEditor({
     onCreate({ editor }) {

@@ -8,7 +8,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "./convex/_generated/api.js";
 import * as Y from "yjs";
 
-dotenv.config();
+dotenv.config({path:".env.local"});
 
 const app = express();
 const server = http.createServer(app);
@@ -86,10 +86,23 @@ async function authenticateToken(token, documentId) {
       documentId,
     });
 
+    if(!session.sub){
+      console.log("Unauthorized");
+      return false
+    }
+
+    const memberships = await clerk.users.getOrganizationMembershipList({
+      userId: session.sub,
+    });
+
+    const isMember = memberships && memberships.some(
+      (m) => m.organization.id === document.organizationId
+    );
+
     if (!document.organizationId) {
       console.log("Unauthorized");
       return false;
-    } else if (document.organizationId !== session.organization_id) {
+    } else if (!isMember) {
       console.log("Unauthorized");
       return false;
     } else {
