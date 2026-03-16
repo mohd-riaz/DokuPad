@@ -36,32 +36,41 @@ const ySocketIO = new YSocketIO(io, {
 ySocketIO.initialize();
 
 ySocketIO.on("document-loaded", async (doc) => {
-  const existing = await httpClient.query(api.documents.getDocumentById, {
-    documentId: doc.name,
-  });
-
-  if (existing?.initialContent) {
-    const update = new Uint8Array(existing.initialContent);
-    if (update.length === 0) {
-      console.log(`Empty data for ${doc.name}`);
-      return;
+  try{
+    const existing = await httpClient.query(api.documents.getDocumentById, {
+      documentId: doc.name,
+    });
+  
+    if (existing?.initialContent) {
+      const update = new Uint8Array(existing.initialContent);
+      if (update.length === 0) {
+        console.log(`Empty data for ${doc.name}`);
+        return;
+      }
+      Y.applyUpdate(doc, update);
+      console.log(`🔄 Loaded ${doc.name} from Convex`);
+    } else {
+      console.log(`🆕 No existing data for ${doc.name}`);
     }
-    Y.applyUpdate(doc, update);
-    console.log(`🔄 Loaded ${doc.name} from Convex`);
-  } else {
-    console.log(`🆕 No existing data for ${doc.name}`);
+  } catch {
+    console.log(`Document not found.`)
   }
 });
 
 async function saveContent(doc) {
-  const update = Y.encodeStateAsUpdate(doc);
+  try {
 
-  await httpClient.mutation(api.documents.saveDocumentById, {
-    id: doc.name,
-    initialContent: update.buffer,
-  });
-
-  console.log(`💾 Saved ${doc.name} to Convex`);
+    const update = Y.encodeStateAsUpdate(doc);
+    
+    await httpClient.mutation(api.documents.saveDocumentById, {
+      id: doc.name,
+      initialContent: update.buffer,
+    });
+    
+    console.log(`💾 Saved ${doc.name} to Convex`);
+  } catch{
+    console.log("Error saving document to convex")
+  }
 }
 
 ySocketIO.on("document-destroy", async (doc) => {

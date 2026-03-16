@@ -180,14 +180,16 @@ export const getDocumentByIdClient = query({
     const document = await ctx.db.get(documentId);
 
     if (!document) {
-      throw new ConvexError("Document not found");
+      //throw new ConvexError("Document not found");
+      return null;
     }
 
     const isOwner = document.ownerId === user.subject;
     const isMember = document.organizationId === organizationId;
 
     if (!isOwner && !isMember) {
-      throw new ConvexError("Unauthorized");
+      //throw new ConvexError("Unauthorized");
+      return null;
     }
 
     return document;

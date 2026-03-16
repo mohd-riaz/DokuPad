@@ -92,11 +92,12 @@ function TextEditor({
       auth: { token: token, documentId }, // Example: { token: 'valid-token' }
     };
     return new SocketIOProvider(
-      `ws://localhost:1234`,
+      process.env.NEXT_PUBLIC_WEBSOCKET_URL!,
       documentId,
       ydoc,
-      configuration
+      configuration,
     );
+
   }, [documentId, token, isCollaborative, ydoc]);
 
   //-----------------add personal document functions here----------------

@@ -54,8 +54,27 @@ import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
 import { Doc } from "../../../../convex/_generated/dataModel";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import FullscreenLoader from "@/components/fullscreen-loader";
+import RenameDialog from "@/components/rename-dialog";
+import RemoveDialog from "@/components/remove-dialog";
 
 function Navbar({ data }: { data: Doc<"documents"> }) {
+  const router = useRouter();
+  const createDocument = useMutation(api.documents.createDocument);
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const renameState = useState(false);
+  const removeState = useState(false);
+
+  const [, setRenameOpen] = renameState;
+  const [, setRemoveOpen] = removeState;
+
   const { editor } = useEditorStore();
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
@@ -65,7 +84,8 @@ function Navbar({ data }: { data: Doc<"documents"> }) {
 
   const [imageUrl, setImageUrl] = useState("");
 
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme, theme, setTheme } = useTheme();
+
 
   const onChange = (src: string) => {
     editor?.chain().focus().setImage({ src }).run();
@@ -149,7 +169,25 @@ function Navbar({ data }: { data: Doc<"documents"> }) {
     onDownload(blob, `${data.title}.txt`);
   };
 
+  const onNewDocument = () => {
+    setIsLoading(true)
+    createDocument({ title: "Blank Document",})
+      .catch(() => toast.error("Something went wrong"))
+      .then((documentId) => {
+        toast.success("Document created");
+        router.push(`/documents/${documentId}`);
+      })
+      .finally(() => {
+        setIsLoading(false)
+    });
+  }
+
+  if(isLoading) {
+    return <FullscreenLoader label="Loading..."/>
+  }
+
   return (
+    <>
     <nav
       className={`flex items-center justify-between w-screen h-fit z-10 bg-background print:hidden pt-2 text-foreground pb-1`}
     >
@@ -193,16 +231,20 @@ function Navbar({ data }: { data: Doc<"documents"> }) {
                       </MenubarItem>
                     </MenubarSubContent>
                   </MenubarSub>
-                  <MenubarItem>
+                  <MenubarItem onClick={onNewDocument}>
                     <FilePlusIcon className="size-4 mr-2" />
                     New Document
                   </MenubarItem>
                   <MenubarSeparator />
-                  <MenubarItem>
+                  <MenubarItem onClick={()=>{
+                    setRenameOpen(true)
+                  }}>
                     <FilePenIcon className="size-4 mr-2" />
                     Rename
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem onClick={()=>{
+                    setRemoveOpen(true)
+                  }}>
                     <TrashIcon className="size-4 mr-2" />
                     Remove
                   </MenubarItem>
@@ -445,6 +487,7 @@ function Navbar({ data }: { data: Doc<"documents"> }) {
         </div>
       </div>
       <div className="pl-6 mr-7 flex gap-3 items-center">
+        <ThemeSwitcher value={theme || 'system'} onChange={(theme)=>{setTheme(theme)}}/>
         <OrganizationSwitcher
           appearance={{
             baseTheme: resolvedTheme === "dark" ? dark : undefined,
@@ -461,6 +504,13 @@ function Navbar({ data }: { data: Doc<"documents"> }) {
         />
       </div>
     </nav>
+    <RenameDialog
+      documentId={data._id}
+      initialTitle={data.title}
+      state={renameState}
+    />
+    <RemoveDialog documentId={data._id} state={removeState}/>
+    </>
   );
 }
 export default Navbar;

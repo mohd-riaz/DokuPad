@@ -3,6 +3,7 @@ import { preloadQuery } from "convex/nextjs";
 import Document from "./document";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { redirect } from "next/navigation";
 
 const DocumentPage = async ({
   params,
@@ -23,14 +24,18 @@ const DocumentPage = async ({
       documentId: documentId as Id<"documents">,
     },
     { token }
-  ).then((document) => {
+  ).catch(()=>{redirect('/documents')})
+  .then((document) => {
+    if(!document) {
+      redirect('/documents')
+    }
     console.log("Document loaded.");
     return document;
-  });
+  })
 
   return (
     <Document
-      preloadedDocument={preloadedDocument}
+      preloadedDocument={preloadedDocument!}
       documentId={documentId}
       token={token}
     />

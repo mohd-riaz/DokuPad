@@ -29,7 +29,9 @@ function RemoveDialog({ documentId, state }: RemoveDialogProps) {
     setIsDeleting(true);
     removeDocument({ id })
       .catch(() => toast.error("Something went wrong"))
-      .then(() => toast.success("Document removed"))
+      .then(() => {
+        toast.success("Document removed")
+      })
       .finally(() => setIsDeleting(false));
   };
 

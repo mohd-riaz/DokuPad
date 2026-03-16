@@ -4,9 +4,10 @@ import SearchInput from "./search-input";
 import { UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 function DocumentNavbar() {
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme, theme, setTheme } = useTheme();
   return (
     <nav className="flex items-center justify-between h-full w-full">
       <div className="flex gap-3 items-center shrink-0 pr-6 ml-4">
@@ -17,6 +18,7 @@ function DocumentNavbar() {
       </div>
       <SearchInput />
       <div className="pl-6 mr-4 flex gap-3 items-center">
+        <ThemeSwitcher value={theme || 'system'} onChange={(theme)=>{setTheme(theme)}}/>
         <OrganizationSwitcher
           appearance={{
             baseTheme: resolvedTheme === "dark" ? dark : undefined,

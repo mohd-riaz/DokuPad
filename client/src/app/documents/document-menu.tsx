@@ -26,8 +26,8 @@ function DocumentMenu({ documentId, title, onNewTab }: DocumentMenuProps) {
   const renameState = useState(false);
   const removeState = useState(false);
 
-  const [renameOpen, setRenameOpen] = renameState;
-  const [removeOpen, setRemoveOpen] = removeState;
+  const [, setRenameOpen] = renameState;
+  const [, setRemoveOpen] = removeState;
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   return (
