@@ -10,7 +10,7 @@ function DocumentNavbar() {
   const { resolvedTheme, theme, setTheme } = useTheme();
   return (
     <nav className="flex items-center justify-between h-full w-full">
-      <div className="flex gap-3 items-center shrink-0 pr-6 ml-4">
+      <div className="flex gap-3 items-center shrink-0 pr-6 ml-4 lg:pr-48">
         <Link href="/">
           <Logo />
         </Link>

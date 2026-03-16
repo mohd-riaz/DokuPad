@@ -1,7 +1,11 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 export default {
   providers: [
     {
-      domain: "https://flowing-terrier-48.clerk.accounts.dev",
+      domain: process.env.CLERK_JWT_ISSUER_DOMAIN ,
       applicationID: "convex",
     },
   ],

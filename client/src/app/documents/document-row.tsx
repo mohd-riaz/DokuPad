@@ -8,10 +8,13 @@ import { useRouter } from "next/navigation";
 
 interface DocumentRowProps {
   document: Doc<"documents">;
+  loadingState: [boolean, (value: boolean)=>void]
 }
 
-function DocumentRow({ document }: DocumentRowProps) {
+function DocumentRow({ document, loadingState }: DocumentRowProps) {
   const router = useRouter();
+
+  const [, setIsLoading] = loadingState;
 
   const onNewTabClick = (id: string) => {
     window.open(`/documents/${id}`, "_blank");
@@ -20,7 +23,10 @@ function DocumentRow({ document }: DocumentRowProps) {
   return (
     <TableRow
       className="cursor-pointer"
-      onClick={() => router.push(`/documents/${document._id}`)}
+      onClick={() => {
+        setIsLoading(true)
+        router.push(`/documents/${document._id}`)
+      }}
     >
       <TableCell className="w-[50px]">
         <FileTextIcon className="size-6 text-muted-foreground" />

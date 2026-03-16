@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/table";
 import DocumentRow from "./document-row";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import FullscreenLoader from "@/components/fullscreen-loader";
 
 interface DocumentsTableProps {
   documents: Doc<"documents">[] | undefined;
@@ -19,6 +21,15 @@ interface DocumentsTableProps {
 }
 
 function DocumentsTable({ documents, loadMore, status }: DocumentsTableProps) {
+
+  const loadingState = useState(false)
+
+  const [isLoading,] = loadingState
+
+  if(isLoading){
+    return <FullscreenLoader label="Loading..."/>
+  }
+
   return (
     <div className="max-w-screen-xl mx-auto px-16 py-6 flex flex-col gap-5">
       {documents === undefined || status === "LoadingFirstPage" ? (
@@ -52,7 +63,7 @@ function DocumentsTable({ documents, loadMore, status }: DocumentsTableProps) {
             ) : (
               <TableBody>
                 {documents.map((document) => (
-                  <DocumentRow key={document._id} document={document} />
+                  <DocumentRow key={document._id} document={document} loadingState={loadingState} />
                 ))}
               </TableBody>
             )}

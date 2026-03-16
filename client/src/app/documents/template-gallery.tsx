@@ -14,6 +14,7 @@ import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import { toast } from "sonner";
 import { base64ToArrayBuffer } from "@/lib/base64-to-array-buffer";
+import FullscreenLoader from "@/components/fullscreen-loader";
 
 export default function TemplateGallery() {
   const router = useRouter();
@@ -26,15 +27,19 @@ export default function TemplateGallery() {
     const arrayBuffer = base64ToArrayBuffer(initialContent);
 
     createDocument({ title, initialContent:arrayBuffer})
-      .catch(() => toast.error("Something went wrong"))
+      .catch(() => {
+        toast.error("Something went wrong")
+        setIsCreating(false)
+      })
       .then((documentId) => {
         toast.success("Document created");
         router.push(`/documents/${documentId}`);
       })
-      .finally(() => {
-        setIsCreating(false);
-      });
     };
+
+  if(isCreating){
+    return <FullscreenLoader label="Loading..."/>
+  }
 
   return (
     <div className="bg-secondary">
