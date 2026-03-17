@@ -86,7 +86,7 @@ This ensures that only users within the same organization can collaborate on sha
 ### Real-Time Layer
 
 * Yjs (CRDT)
-* y-socket.io
+* Y-socket.io
 
 ### Authentication
 
