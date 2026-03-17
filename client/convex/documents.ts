@@ -170,7 +170,8 @@ export const getDocumentByIdClient = query({
   handler: async (ctx, { documentId }) => {
     const user = await ctx.auth.getUserIdentity();
     if (!user) {
-      throw new ConvexError("Unauthorized");
+      // throw new ConvexError("Unauthorized");
+      return null;
     }
 
     const organizationId = (user.organization_id ?? undefined) as

@@ -30,7 +30,6 @@ function Document({ preloadedDocument, documentId, token }: DocumentProps) {
     return <div>redirecting...</div>
   }
 
-
   return (
     <div className="min-h-screen bg-primary-foreground overflow-auto">
       <div className="flex flex-col fixed top-0 left-0 right-0 z-10 bg-primary-foreground print:hidden">

@@ -71,7 +71,7 @@ function TextEditor({
     Math.abs(
       user?.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0
     ) % 360;
-  const color = `hsl(${hue}, 80%, 60%)`;
+  const color = `hsl(${hue}, 80%, 75%)`;
 
   const provider = useMemo(() => {
     if (!isCollaborative) {
