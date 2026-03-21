@@ -6,8 +6,8 @@ A full-stack **Google Docs–style editor** with real-time collaboration powered
 
 ## Live Demo
 
- **Deployed App:** 
- https://dokupad.mohdriaz.com
+**Deployed App:**
+https://dokupad.mohdriaz.com
 
 <img width="1887" height="597" alt="image" src="https://github.com/user-attachments/assets/e022deae-da8c-4c01-b5c1-fb160ef31199" />
 
@@ -15,14 +15,14 @@ A full-stack **Google Docs–style editor** with real-time collaboration powered
 
 ## Features
 
-* Authentication with Clerk
-* Create, edit, and delete documents
-* Rich text editing with Tiptap
-* Real-time collaboration using **Yjs (CRDT)**
-* WebSocket-based synchronization
-* Persistent storage with Convex
-* Conflict-free merging of concurrent edits
-* Responsive UI with Tailwind CSS
+- Authentication with Clerk
+- Create, edit, and delete documents
+- Rich text editing with Tiptap
+- Real-time collaboration using **Yjs (CRDT)**
+- WebSocket-based synchronization
+- Persistent storage with Convex
+- Conflict-free merging of concurrent edits
+- Responsive UI with Tailwind CSS
 
 ---
 
@@ -48,9 +48,9 @@ This project uses **Yjs**, a CRDT (Conflict-free Replicated Data Type), to enabl
 
 ### Key Properties
 
-* Conflict-free updates (no overwrites)
-* Efficient real-time synchronization
-* Concurrent multi-user editing
+- Conflict-free updates (no overwrites)
+- Efficient real-time synchronization
+- Concurrent multi-user editing
 
 ### How it works
 
@@ -75,38 +75,43 @@ This ensures that only users within the same organization can collaborate on sha
 
 ### Frontend
 
-* Next.js (App Router)
-* React
-* Tailwind CSS
+- Next.js (App Router)
+- React
+- Tailwind CSS
 
 ### Backend
 
-* Convex (Database + serverless functions)
+- Convex (Database + serverless functions)
 
 ### Real-Time Layer
 
-* Yjs (CRDT)
-* Y-socket.io
+- Yjs (CRDT)
+- Y-socket.io
 
 ### Authentication
 
-* Clerk
+- Clerk
 
 ---
 
 ## Installation
 
 Clone repository:
+
 ```bash
 git clone https://github.com/mohd-riaz/DokuPad.git
 cd DokuPad
 ```
+
 Install client dependencies:
+
 ```bash
 cd client
 npm install --legacy-peer-deps
 ```
+
 Install server dependencies:
+
 ```bash
 cd server
 npm install --legacy-peer-deps
@@ -117,16 +122,22 @@ npm install --legacy-peer-deps
 ## Running Locally
 
 Start Next.js:
+
 ```bash
 cd client
 npm run dev
 ```
+
 Start Convex backend:
+
 ```bash
 cd client
+npx convex env set CLERK_JWT_ISSUER_DOMAIN "your Clerk jwt issuer domain e.g. https://<slug>.clerk.accounts.dev"
 npx convex dev
 ```
+
 Start Y-socket.io server:
+
 ```bash
 cd server
 node server.js
@@ -136,19 +147,19 @@ node server.js
 
 ## Deployment
 
-* **Frontend:** Vercel
-* **Backend:** Convex
-* **Real-time server:** Render
+- **Frontend:** Vercel
+- **Backend:** Convex
+- **Real-time server:** Render
 
 ---
 
 ## Key Learnings
 
-* Designing **real-time collaborative systems**
-* Implementing **CRDT-based synchronization (Yjs)**
-* Managing **WebSocket communication**
-* Handling **access control for collaborative environments**
-* Integrating frontend, backend, and real-time layers
+- Designing **real-time collaborative systems**
+- Implementing **CRDT-based synchronization (Yjs)**
+- Managing **WebSocket communication**
+- Handling **access control for collaborative environments**
+- Integrating frontend, backend, and real-time layers
 
 ---
 

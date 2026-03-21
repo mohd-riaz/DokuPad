@@ -14,14 +14,17 @@ dotenv.config({ path: ".env.local" });
 const app = express();
 const server = http.createServer(app);
 
-const clerk = new createClerkClient({
+const clerk = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
 });
+
 const httpClient = new ConvexHttpClient(
   process.env.CONVEX_URL,
 );
 
-httpClient.setAdminAuth(process.env.CONVEX_DEPLOY_KEY); 
+if (process.env.CONVEX_DEPLOY_KEY) {
+  httpClient.setAdminAuth(process.env.CONVEX_DEPLOY_KEY);
+}
 
 const io = new Server(server, {
   cors: {
