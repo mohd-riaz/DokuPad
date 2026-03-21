@@ -110,6 +110,13 @@ cd client
 npm install --legacy-peer-deps
 ```
 
+Set Convex environment variable:
+
+```bash
+cd client
+npx convex env set CLERK_JWT_ISSUER_DOMAIN "e.g. https://<slug>.clerk.accounts.dev from clerk dashboard."
+```
+
 Install server dependencies:
 
 ```bash
@@ -132,7 +139,6 @@ Start Convex backend:
 
 ```bash
 cd client
-npx convex env set CLERK_JWT_ISSUER_DOMAIN "your Clerk jwt issuer domain e.g. https://<slug>.clerk.accounts.dev"
 npx convex dev
 ```
 
