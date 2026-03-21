@@ -28,16 +28,16 @@ https://dokupad.mohdriaz.com
 
 ## Architecture
 
-```text
-Client (Next.js + Tiptap + Yjs)
-        │
-        │ WebSocket (Yjs updates)
-        ▼
-Yjs WebSocket Server
-        │
-        │ Sync + Broadcast
-        ▼
-Convex Backend (Persistence Layer)
+```mermaid
+graph TD
+    %% Node Definitions
+    Client["Client (Next.js + Tiptap + Yjs)"]
+    WSServer["Yjs WebSocket Server"]
+    Convex["Convex Backend (Persistence Layer)"]
+
+    %% Connections
+    Client <==>|"WebSocket (Yjs updates)"| WSServer
+    WSServer <==>|"Sync + Broadcast"| Convex
 ```
 
 ---
