@@ -1,3 +1,5 @@
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/logo";
 import LandingThemeToggle from "@/components/landing-theme-toggle";
@@ -128,7 +130,10 @@ const HOW_IT_WORKS = [
   "Each client merges the update — CRDT math guarantees convergence.",
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { userId } = await auth();
+  if (userId) redirect("/documents");
+
   return (
     <div className="relative antialiased min-h-screen">
       <div className="hero-glow" aria-hidden="true" />

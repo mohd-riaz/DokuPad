@@ -4,8 +4,8 @@ import { useEditorStore } from "@/store/use-editor-store";
 import { useMutation } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
-import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { api } from "../../../../../convex/_generated/api";
+import { Id } from "../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 
 const markers = Array.from({ length: 83 }, (_, i) => i);

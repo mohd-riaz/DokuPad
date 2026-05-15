@@ -4,7 +4,7 @@ import Navbar from "./navbar";
 import TextEditor from "./text-editor";
 import Toolbar from "./toolbar";
 import { Preloaded, usePreloadedQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "../../../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

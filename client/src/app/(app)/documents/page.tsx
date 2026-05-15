@@ -3,7 +3,7 @@
 import DocumentNavbar from "./document-navbar";
 import TemplateGallery from "./template-gallery";
 import { usePaginatedQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import DocumentsTable from "./documents-table";
 import { useSearchParams } from "@/hooks/use-search-params";
 import { useAuth } from "@clerk/nextjs";

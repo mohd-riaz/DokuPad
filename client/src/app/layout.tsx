@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Roboto_Flex } from "next/font/google";
-import { ConvexClientProvider } from "@/components/convex-client-provider";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 
 // const geistSans = localFont({
@@ -33,18 +32,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${robotoFlex.className}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NuqsAdapter>
-            <ConvexClientProvider>
+        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!} afterSignOutUrl="/sign-in">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NuqsAdapter>
               <Toaster /> {children}
-            </ConvexClientProvider>
-          </NuqsAdapter>
-        </ThemeProvider>
+            </NuqsAdapter>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

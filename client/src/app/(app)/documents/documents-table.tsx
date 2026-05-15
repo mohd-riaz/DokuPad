@@ -1,5 +1,5 @@
 import { PaginationStatus } from "convex/react";
-import { Doc } from "../../../convex/_generated/dataModel";
+import { Doc } from "../../../../convex/_generated/dataModel";
 import { LoaderIcon } from "lucide-react";
 import {
   Table,

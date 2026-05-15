@@ -11,7 +11,7 @@ import {
   MoreVertical,
   TrashIcon,
 } from "lucide-react";
-import { Id } from "../../../convex/_generated/dataModel";
+import { Id } from "../../../../convex/_generated/dataModel";
 import RemoveDialog from "@/components/remove-dialog";
 import RenameDialog from "@/components/rename-dialog";
 import { useState } from "react";

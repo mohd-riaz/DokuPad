@@ -37,8 +37,8 @@ import MarginRuler from "./margin-ruler";
 import FullscreenLoader from "@/components/fullscreen-loader";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { api } from "../../../../../convex/_generated/api";
+import { Id } from "../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 
